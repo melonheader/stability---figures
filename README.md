@@ -14,7 +14,8 @@ To regenerate the figures, first step would be to downloaded necessary data with
  ```
 ### Regenerating the figures
 Running the entirety of R notebook ./src/code.RMD will save all figures in the ./output folder. 
-Short descriptions for the outpout could be found above code-chunks in the same notebook.
+Short descriptions for the outpout could be found above code-chunks in the same notebook. 
+Opening the repository as an Rproject is recommended.
 
 ### Environment
 Currently, the state of the project's libraries is saved with [```renv```](https://rstudio.github.io/renv/articles/renv.html#reproducibility) R package. 
