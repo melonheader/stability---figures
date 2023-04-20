@@ -1,0 +1,2 @@
+group	variable	value	comparison	test	p-value	p-adjusted	sign.symb
+		delta lg2FC shElavl234 - Scrambed	shElavl234 Down S+N.vs.Random sample	Welch's two sample t-test	6.274315645147917e-29	6.274315645147917e-29	***

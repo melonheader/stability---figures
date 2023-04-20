@@ -1,0 +1,9 @@
+# R-project specific files
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+
+# data
+/data
+data.tar.gz

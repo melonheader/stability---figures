@@ -1,0 +1,3 @@
+group	test	comparison	p-value	p-adjusted	sign.symb
+shMettl3	Welch's two sample t-test	Upregulation.vs.m6A-enrichment	4.750613852224612e-71	9.501227704449224e-71	***
+shYTHDF123	Welch's two sample t-test	Upregulation.vs.m6A-enrichment	2.0848818003144433e-13	2.0848818003144433e-13	***

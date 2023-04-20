@@ -1,0 +1,2 @@
+group	variable	value	comparison	test	p-value	p-adjusted	sign.symb
+		ARE count	shElavl234 Down S+N.vs.Random sample	Welch's two sample t-test	1.7467130822568575e-4	1.7467130822568575e-4	***

@@ -1,0 +1,2 @@
+group	comparison	test	p-value	p-adjusted	sign.symb
+localisation 3c	m6A-enriched.vs.m6A-depleted	Welch's two sample t-test	4.833172592021118e-26	4.833172592021118e-26	***

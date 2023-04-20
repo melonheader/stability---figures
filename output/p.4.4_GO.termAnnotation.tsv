@@ -1,0 +1,659 @@
+GO.term_id	GO.term_name	gene_name	info
+GO:1902414	protein localization to cell junction	Nrxn2	Neurexin-2
+GO:1902414	protein localization to cell junction	Jak1	Tyrosine-protein kinase JAK1
+GO:1902414	protein localization to cell junction	Git1	ARF GTPase-activating protein GIT1
+GO:1902414	protein localization to cell junction	Nlgn2	Neuroligin-2
+GO:1902414	protein localization to cell junction	Clstn3	Calsyntenin-3
+GO:1902414	protein localization to cell junction	Nrxn1	Neurexin-1
+GO:1902414	protein localization to cell junction	Map1a	Microtubule-associated protein 1A
+GO:1902414	protein localization to cell junction	Adam22	Disintegrin and metalloproteinase domain-containing protein 22
+GO:1902414	protein localization to cell junction	Mapk9	Mitogen-activated protein kinase 9
+GO:1902414	protein localization to cell junction	Gsk3b	Glycogen synthase kinase-3 beta
+GO:0034392	negative regulation of smooth muscle cell apoptotic process	Igf1	Insulin-like growth factor I
+GO:0034392	negative regulation of smooth muscle cell apoptotic process	Gsk3b	Glycogen synthase kinase-3 beta
+GO:0034392	negative regulation of smooth muscle cell apoptotic process	Slc7a5	Large neutral amino acids transporter small subunit 1
+GO:0034392	negative regulation of smooth muscle cell apoptotic process	Gria4	Glutamate receptor 4
+GO:0030133	transport vesicle	Clta	Clathrin light chain A
+GO:0030133	transport vesicle	Hap1	Huntingtin-associated protein 1
+GO:0030133	transport vesicle	Sorl1	Sortilin-related receptor
+GO:0030133	transport vesicle	Igf1	Insulin-like growth factor I
+GO:0030133	transport vesicle	Lamp1	Lysosome-associated membrane glycoprotein 1
+GO:0030133	transport vesicle	App	Amyloid-beta precursor protein
+GO:0030133	transport vesicle	Ap1g1	AP-1 complex subunit gamma-1
+GO:0030133	transport vesicle	Furin	Furin
+GO:0030133	transport vesicle	Clcn3	H(+)/Cl(-) exchange transporter 3
+GO:0030133	transport vesicle	Nrgn	Neurogranin
+GO:0030133	transport vesicle	Srebf2	Sterol regulatory element-binding protein 2
+GO:0030133	transport vesicle	Dmxl2	DmX-like protein 2
+GO:0030133	transport vesicle	Stxbp5	Syntaxin-binding protein 5
+GO:0030133	transport vesicle	Syt13	Synaptotagmin-13
+GO:0030133	transport vesicle	Bloc1s6	Biogenesis of lysosome-related organelles complex 1 subunit 6
+GO:0030133	transport vesicle	Syt7	Synaptotagmin-7
+KEGG:00100	Steroid biosynthesis	Sqle	Squalene monooxygenase
+KEGG:00100	Steroid biosynthesis	Fdft1	Squalene synthase
+KEGG:00100	Steroid biosynthesis	Lss	Lanosterol synthase
+KEGG:00100	Steroid biosynthesis	Msmo1	Methylsterol monooxygenase 1
+GO:1902991	regulation of amyloid precursor protein catabolic process	Hap1	Huntingtin-associated protein 1
+GO:1902991	regulation of amyloid precursor protein catabolic process	Sorl1	Sortilin-related receptor
+GO:1902991	regulation of amyloid precursor protein catabolic process	Igf1	Insulin-like growth factor I
+GO:1902991	regulation of amyloid precursor protein catabolic process	App	Amyloid-beta precursor protein
+GO:1902991	regulation of amyloid precursor protein catabolic process	Casp3	Caspase-3
+GO:1902991	regulation of amyloid precursor protein catabolic process	Gsk3a	Glycogen synthase kinase-3 alpha
+GO:0032007	negative regulation of TOR signaling	Gsk3a	Glycogen synthase kinase-3 alpha
+GO:0032007	negative regulation of TOR signaling	Tmem127	Transmembrane protein 127
+GO:0032007	negative regulation of TOR signaling	Prkaa2	5'-AMP-activated protein kinase catalytic subunit alpha-2
+GO:0032007	negative regulation of TOR signaling	Sesn3	Sestrin-3
+GO:0032007	negative regulation of TOR signaling	Akt1s1	Proline-rich AKT1 substrate 1
+GO:0032007	negative regulation of TOR signaling	Gsk3b	Glycogen synthase kinase-3 beta
+GO:0030705	cytoskeleton-dependent intracellular transport	Hap1	Huntingtin-associated protein 1
+GO:0030705	cytoskeleton-dependent intracellular transport	Nefl	Neurofilament light polypeptide
+GO:0030705	cytoskeleton-dependent intracellular transport	Lamp1	Lysosome-associated membrane glycoprotein 1
+GO:0030705	cytoskeleton-dependent intracellular transport	App	Amyloid-beta precursor protein
+GO:0030705	cytoskeleton-dependent intracellular transport	Kif3b	Kinesin-like protein KIF3B
+GO:0030705	cytoskeleton-dependent intracellular transport	Arhgap21	Rho GTPase-activating protein 21
+GO:0030705	cytoskeleton-dependent intracellular transport	Ap3s2	AP-3 complex subunit sigma-2
+GO:0030705	cytoskeleton-dependent intracellular transport	Ssx2ip	Afadin- and alpha-actinin-binding protein
+GO:0030705	cytoskeleton-dependent intracellular transport	Dync1h1	Cytoplasmic dynein 1 heavy chain 1
+GO:0030705	cytoskeleton-dependent intracellular transport	Map1a	Microtubule-associated protein 1A
+GO:0030705	cytoskeleton-dependent intracellular transport	Spast	Spastin
+GO:0030705	cytoskeleton-dependent intracellular transport	Bloc1s6	Biogenesis of lysosome-related organelles complex 1 subunit 6
+GO:0030705	cytoskeleton-dependent intracellular transport	Uchl1	Ubiquitin carboxyl-terminal hydrolase isozyme L1
+GO:0099111	microtubule-based transport	Hap1	Huntingtin-associated protein 1
+GO:0099111	microtubule-based transport	Nefl	Neurofilament light polypeptide
+GO:0099111	microtubule-based transport	Lamp1	Lysosome-associated membrane glycoprotein 1
+GO:0099111	microtubule-based transport	App	Amyloid-beta precursor protein
+GO:0099111	microtubule-based transport	Kif3b	Kinesin-like protein KIF3B
+GO:0099111	microtubule-based transport	Arhgap21	Rho GTPase-activating protein 21
+GO:0099111	microtubule-based transport	Ap3s2	AP-3 complex subunit sigma-2
+GO:0099111	microtubule-based transport	Ssx2ip	Afadin- and alpha-actinin-binding protein
+GO:0099111	microtubule-based transport	Dync1h1	Cytoplasmic dynein 1 heavy chain 1
+GO:0099111	microtubule-based transport	Map1a	Microtubule-associated protein 1A
+GO:0099111	microtubule-based transport	Spast	Spastin
+GO:0099111	microtubule-based transport	Bloc1s6	Biogenesis of lysosome-related organelles complex 1 subunit 6
+GO:0099111	microtubule-based transport	Uchl1	Ubiquitin carboxyl-terminal hydrolase isozyme L1
+GO:1902652	secondary alcohol metabolic process	App	Amyloid-beta precursor protein
+GO:1902652	secondary alcohol metabolic process	Sqle	Squalene monooxygenase
+GO:1902652	secondary alcohol metabolic process	Fdft1	Squalene synthase
+GO:1902652	secondary alcohol metabolic process	Srebf2	Sterol regulatory element-binding protein 2
+GO:1902652	secondary alcohol metabolic process	Erlin2	Erlin-2
+GO:1902652	secondary alcohol metabolic process	Lss	Lanosterol synthase
+GO:1902652	secondary alcohol metabolic process	Prkaa2	5'-AMP-activated protein kinase catalytic subunit alpha-2
+GO:1902652	secondary alcohol metabolic process	Hmgcs1	Hydroxymethylglutaryl-CoA synthase, cytoplasmic
+GO:1902652	secondary alcohol metabolic process	Mvd	Diphosphomevalonate decarboxylase
+GO:1902652	secondary alcohol metabolic process	Msmo1	Methylsterol monooxygenase 1
+GO:0008202	steroid metabolic process	Igf1	Insulin-like growth factor I
+GO:0008202	steroid metabolic process	App	Amyloid-beta precursor protein
+GO:0008202	steroid metabolic process	Pbx1	Pre-B-cell leukemia transcription factor 1
+GO:0008202	steroid metabolic process	Sqle	Squalene monooxygenase
+GO:0008202	steroid metabolic process	Fdft1	Squalene synthase
+GO:0008202	steroid metabolic process	Srebf2	Sterol regulatory element-binding protein 2
+GO:0008202	steroid metabolic process	Srd5a1	3-oxo-5-alpha-steroid 4-dehydrogenase 1
+GO:0008202	steroid metabolic process	Erlin2	Erlin-2
+GO:0008202	steroid metabolic process	Lss	Lanosterol synthase
+GO:0008202	steroid metabolic process	Prkaa2	5'-AMP-activated protein kinase catalytic subunit alpha-2
+GO:0008202	steroid metabolic process	Hmgcs1	Hydroxymethylglutaryl-CoA synthase, cytoplasmic
+GO:0008202	steroid metabolic process	Atp1a1	Sodium/potassium-transporting ATPase subunit alpha-1
+GO:0008202	steroid metabolic process	Mvd	Diphosphomevalonate decarboxylase
+GO:0008202	steroid metabolic process	Msmo1	Methylsterol monooxygenase 1
+GO:0002028	regulation of sodium ion transport	Ptpn3	Tyrosine-protein phosphatase non-receptor type 3
+GO:0002028	regulation of sodium ion transport	Atp1b2	Sodium/potassium-transporting ATPase subunit beta-2
+GO:0002028	regulation of sodium ion transport	Slc8a1	Sodium/calcium exchanger 1
+GO:0002028	regulation of sodium ion transport	Camk2d	Calcium/calmodulin-dependent protein kinase type II subunit delta
+GO:0002028	regulation of sodium ion transport	Scn3b	Sodium channel subunit beta-3
+GO:0002028	regulation of sodium ion transport	Klhl24	Kelch-like protein 24
+GO:0002028	regulation of sodium ion transport	Hecw1	E3 ubiquitin-protein ligase HECW1
+GO:0002028	regulation of sodium ion transport	Atp1a1	Sodium/potassium-transporting ATPase subunit alpha-1
+GO:0002028	regulation of sodium ion transport	Akt3	RAC-gamma serine/threonine-protein kinase
+GO:0002028	regulation of sodium ion transport	Plcb1	1-phosphatidylinositol 4,5-bisphosphate phosphodiesterase beta-1
+GO:0099568	cytoplasmic region	Hap1	Huntingtin-associated protein 1
+GO:0099568	cytoplasmic region	Nefl	Neurofilament light polypeptide
+GO:0099568	cytoplasmic region	Rangap1	Ran GTPase-activating protein 1
+GO:0099568	cytoplasmic region	Uhmk1	Serine/threonine-protein kinase Kist
+GO:0099568	cytoplasmic region	Kif3b	Kinesin-like protein KIF3B
+GO:0099568	cytoplasmic region	Rims3	Regulating synaptic membrane exocytosis protein 3
+GO:0099568	cytoplasmic region	Ap3s2	AP-3 complex subunit sigma-2
+GO:0099568	cytoplasmic region	Abhd12	Lysophosphatidylserine lipase ABHD12
+GO:0099568	cytoplasmic region	Dync1h1	Cytoplasmic dynein 1 heavy chain 1
+GO:0099568	cytoplasmic region	Map1a	Microtubule-associated protein 1A
+GO:0099568	cytoplasmic region	Spast	Spastin
+GO:0099568	cytoplasmic region	Bloc1s6	Biogenesis of lysosome-related organelles complex 1 subunit 6
+GO:0099568	cytoplasmic region	Uchl1	Ubiquitin carboxyl-terminal hydrolase isozyme L1
+GO:0051932	synaptic transmission, GABAergic	Hap1	Huntingtin-associated protein 1
+GO:0051932	synaptic transmission, GABAergic	Clcn3	H(+)/Cl(-) exchange transporter 3
+GO:0051932	synaptic transmission, GABAergic	Gabrb2	Gamma-aminobutyric acid receptor subunit beta-2
+GO:0051932	synaptic transmission, GABAergic	Nlgn2	Neuroligin-2
+GO:0051932	synaptic transmission, GABAergic	Phf24	PHD finger protein 24
+GO:0051932	synaptic transmission, GABAergic	Zdhhc3	Palmitoyltransferase ZDHHC3
+GO:0051932	synaptic transmission, GABAergic	Clstn3	Calsyntenin-3
+GO:0051932	synaptic transmission, GABAergic	Nrxn1	Neurexin-1
+GO:0050905	neuromuscular process	Nefl	Neurofilament light polypeptide
+GO:0050905	neuromuscular process	App	Amyloid-beta precursor protein
+GO:0050905	neuromuscular process	Myh10	Myosin-10
+GO:0050905	neuromuscular process	Nlgn2	Neuroligin-2
+GO:0050905	neuromuscular process	Pnkd	Probable hydrolase PNKD
+GO:0050905	neuromuscular process	Rbfox2	RNA binding protein fox-1 homolog 2
+GO:0050905	neuromuscular process	Nrxn1	Neurexin-1
+GO:0050905	neuromuscular process	Aldh1a3	Aldehyde dehydrogenase family 1 member A3
+GO:0050905	neuromuscular process	Rbfox1	RNA binding protein fox-1 homolog 1
+GO:0050905	neuromuscular process	Map1a	Microtubule-associated protein 1A
+GO:0050905	neuromuscular process	Uchl1	Ubiquitin carboxyl-terminal hydrolase isozyme L1
+GO:0055037	recycling endosome	Bok	Bcl-2-related ovarian killer protein
+GO:0055037	recycling endosome	Sorl1	Sortilin-related receptor
+GO:0055037	recycling endosome	App	Amyloid-beta precursor protein
+GO:0055037	recycling endosome	Ap1g1	AP-1 complex subunit gamma-1
+GO:0055037	recycling endosome	Clcn3	H(+)/Cl(-) exchange transporter 3
+GO:0055037	recycling endosome	Rap2b	Ras-related protein Rap-2b
+GO:0055037	recycling endosome	Fchsd2	F-BAR and double SH3 domains protein 2
+GO:0055037	recycling endosome	Fchsd1	F-BAR and double SH3 domains protein 1
+GO:0055037	recycling endosome	Rab11fip4	Rab11 family-interacting protein 4
+GO:0055037	recycling endosome	Rap2c	Ras-related protein Rap-2c
+GO:0055037	recycling endosome	Ehd3	EH domain-containing protein 3
+KEGG:05210	Colorectal cancer	Nras	GTPase NRas
+KEGG:05210	Colorectal cancer	Ccnd1	G1/S-specific cyclin-D1
+KEGG:05210	Colorectal cancer	Dcc	Netrin receptor DCC
+KEGG:05210	Colorectal cancer	Casp3	Caspase-3
+KEGG:05210	Colorectal cancer	Mapk9	Mitogen-activated protein kinase 9
+KEGG:05210	Colorectal cancer	Akt3	RAC-gamma serine/threonine-protein kinase
+KEGG:05210	Colorectal cancer	Gsk3b	Glycogen synthase kinase-3 beta
+GO:0007409	axonogenesis	Raph1	Ras association (RalGDS/AF-6) and pleckstrin homology domains 1
+GO:0007409	axonogenesis	Dpysl2	Dihydropyrimidinase-related protein 2
+GO:0007409	axonogenesis	Sema4d	Semaphorin-4D
+GO:0007409	axonogenesis	Robo1	Roundabout homolog 1
+GO:0007409	axonogenesis	Nefl	Neurofilament light polypeptide
+GO:0007409	axonogenesis	App	Amyloid-beta precursor protein
+GO:0007409	axonogenesis	Ttl	Tubulin--tyrosine ligase
+GO:0007409	axonogenesis	Dcc	Netrin receptor DCC
+GO:0007409	axonogenesis	Chl1	Neural cell adhesion molecule L1-like protein
+GO:0007409	axonogenesis	Islr2	Immunoglobulin superfamily containing leucine-rich repeat protein 2
+GO:0007409	axonogenesis	Alcam	CD166 antigen
+GO:0007409	axonogenesis	Myh10	Myosin-10
+GO:0007409	axonogenesis	Sema5a	Semaphorin-5A
+GO:0007409	axonogenesis	Shtn1	Shootin-1
+GO:0007409	axonogenesis	Stxbp5	Syntaxin-binding protein 5
+GO:0007409	axonogenesis	Arhgap35	Rho GTPase-activating protein 35
+GO:0007409	axonogenesis	Map1a	Microtubule-associated protein 1A
+GO:0007409	axonogenesis	Spast	Spastin
+GO:0007409	axonogenesis	Uchl1	Ubiquitin carboxyl-terminal hydrolase isozyme L1
+GO:0007409	axonogenesis	Gsk3b	Glycogen synthase kinase-3 beta
+GO:0031594	neuromuscular junction	Nefl	Neurofilament light polypeptide
+GO:0031594	neuromuscular junction	App	Amyloid-beta precursor protein
+GO:0031594	neuromuscular junction	Fchsd2	F-BAR and double SH3 domains protein 2
+GO:0031594	neuromuscular junction	Myh10	Myosin-10
+GO:0031594	neuromuscular junction	Fchsd1	F-BAR and double SH3 domains protein 1
+GO:0031594	neuromuscular junction	Camk2d	Calcium/calmodulin-dependent protein kinase type II subunit delta
+GO:0031594	neuromuscular junction	Stxbp5	Syntaxin-binding protein 5
+GO:0031594	neuromuscular junction	Nrxn1	Neurexin-1
+GO:0098982	GABA-ergic synapse	Pcdh17	Protocadherin 17
+GO:0098982	GABA-ergic synapse	Hap1	Huntingtin-associated protein 1
+GO:0098982	GABA-ergic synapse	Clcn3	H(+)/Cl(-) exchange transporter 3
+GO:0098982	GABA-ergic synapse	Gabrb2	Gamma-aminobutyric acid receptor subunit beta-2
+GO:0098982	GABA-ergic synapse	Mdga1	MAM domain-containing glycosylphosphatidylinositol anchor protein 1
+GO:0098982	GABA-ergic synapse	Git1	ARF GTPase-activating protein GIT1
+GO:0098982	GABA-ergic synapse	Nlgn2	Neuroligin-2
+GO:0098982	GABA-ergic synapse	Clstn3	Calsyntenin-3
+GO:0098982	GABA-ergic synapse	Nrxn1	Neurexin-1
+GO:0098982	GABA-ergic synapse	Syt7	Synaptotagmin-7
+GO:0098982	GABA-ergic synapse	Plcb1	1-phosphatidylinositol 4,5-bisphosphate phosphodiesterase beta-1
+GO:0097060	synaptic membrane	Nrxn2	Neurexin-2
+GO:0097060	synaptic membrane	Clta	Clathrin light chain A
+GO:0097060	synaptic membrane	Gria2	Glutamate receptor 2
+GO:0097060	synaptic membrane	Nrgn	Neurogranin
+GO:0097060	synaptic membrane	Gabrb2	Gamma-aminobutyric acid receptor subunit beta-2
+GO:0097060	synaptic membrane	Slc8a1	Sodium/calcium exchanger 1
+GO:0097060	synaptic membrane	Nlgn2	Neuroligin-2
+GO:0097060	synaptic membrane	Igsf21	Immunoglobulin superfamily member 21
+GO:0097060	synaptic membrane	Rims3	Regulating synaptic membrane exocytosis protein 3
+GO:0097060	synaptic membrane	Stxbp5	Syntaxin-binding protein 5
+GO:0097060	synaptic membrane	Srgap2	SLIT-ROBO Rho GTPase-activating protein 2
+GO:0097060	synaptic membrane	Clstn3	Calsyntenin-3
+GO:0097060	synaptic membrane	Nrxn1	Neurexin-1
+GO:0097060	synaptic membrane	Syt7	Synaptotagmin-7
+GO:0097060	synaptic membrane	Gria4	Glutamate receptor 4
+GO:0021987	cerebral cortex development	Robo1	Roundabout homolog 1
+GO:0021987	cerebral cortex development	Nefl	Neurofilament light polypeptide
+GO:0021987	cerebral cortex development	Mdga1	MAM domain-containing glycosylphosphatidylinositol anchor protein 1
+GO:0021987	cerebral cortex development	Srd5a1	3-oxo-5-alpha-steroid 4-dehydrogenase 1
+GO:0021987	cerebral cortex development	Slc38a2	Sodium-coupled neutral amino acid transporter 2
+GO:0021987	cerebral cortex development	Srgap2	SLIT-ROBO Rho GTPase-activating protein 2
+GO:0021987	cerebral cortex development	Lhx6	LIM/homeobox protein Lhx6
+GO:0021987	cerebral cortex development	Gsk3b	Glycogen synthase kinase-3 beta
+GO:0021987	cerebral cortex development	Plcb1	1-phosphatidylinositol 4,5-bisphosphate phosphodiesterase beta-1
+KEGG:04728	Dopaminergic synapse	Gria2	Glutamate receptor 2
+KEGG:04728	Dopaminergic synapse	Gng2	Guanine nucleotide-binding protein G(I)/G(S)/G(O) subunit gamma-2
+KEGG:04728	Dopaminergic synapse	Gsk3a	Glycogen synthase kinase-3 alpha
+KEGG:04728	Dopaminergic synapse	Maoa	Amine oxidase [flavin-containing] A
+KEGG:04728	Dopaminergic synapse	Camk2d	Calcium/calmodulin-dependent protein kinase type II subunit delta
+KEGG:04728	Dopaminergic synapse	Gnal	Guanine nucleotide-binding protein G(olf) subunit alpha
+KEGG:04728	Dopaminergic synapse	Gnai3	Guanine nucleotide-binding protein G(i) subunit alpha-3
+KEGG:04728	Dopaminergic synapse	Mapk9	Mitogen-activated protein kinase 9
+KEGG:04728	Dopaminergic synapse	Akt3	RAC-gamma serine/threonine-protein kinase
+KEGG:04728	Dopaminergic synapse	Gsk3b	Glycogen synthase kinase-3 beta
+KEGG:04728	Dopaminergic synapse	Plcb1	1-phosphatidylinositol 4,5-bisphosphate phosphodiesterase beta-1
+KEGG:04728	Dopaminergic synapse	Gria4	Glutamate receptor 4
+KEGG:04371	Apelin signaling pathway	Nras	GTPase NRas
+KEGG:04371	Apelin signaling pathway	Ccnd1	G1/S-specific cyclin-D1
+KEGG:04371	Apelin signaling pathway	Gng2	Guanine nucleotide-binding protein G(I)/G(S)/G(O) subunit gamma-2
+KEGG:04371	Apelin signaling pathway	Slc8a1	Sodium/calcium exchanger 1
+KEGG:04371	Apelin signaling pathway	Prkaa2	5'-AMP-activated protein kinase catalytic subunit alpha-2
+KEGG:04371	Apelin signaling pathway	Gnai3	Guanine nucleotide-binding protein G(i) subunit alpha-3
+KEGG:04371	Apelin signaling pathway	Akt3	RAC-gamma serine/threonine-protein kinase
+KEGG:04371	Apelin signaling pathway	Plcb1	1-phosphatidylinositol 4,5-bisphosphate phosphodiesterase beta-1
+KEGG:04371	Apelin signaling pathway	Hdac5	Histone deacetylase 5
+KEGG:04936	Alcoholic liver disease	Scd1	Acyl-CoA desaturase 1
+KEGG:04936	Alcoholic liver disease	Ccnd1	G1/S-specific cyclin-D1
+KEGG:04936	Alcoholic liver disease	Casp3	Caspase-3
+KEGG:04936	Alcoholic liver disease	Acaca	Acetyl-CoA carboxylase 1
+KEGG:04936	Alcoholic liver disease	Adipor2	Adiponectin receptor protein 2
+KEGG:04936	Alcoholic liver disease	Prkaa2	5'-AMP-activated protein kinase catalytic subunit alpha-2
+KEGG:04936	Alcoholic liver disease	Mapk9	Mitogen-activated protein kinase 9
+KEGG:04936	Alcoholic liver disease	Akt3	RAC-gamma serine/threonine-protein kinase
+KEGG:04936	Alcoholic liver disease	Gsk3b	Glycogen synthase kinase-3 beta
+KEGG:04360	Axon guidance	Dpysl2	Dihydropyrimidinase-related protein 2
+KEGG:04360	Axon guidance	Sema4d	Semaphorin-4D
+KEGG:04360	Axon guidance	Limk2	LIM domain kinase 2
+KEGG:04360	Axon guidance	Robo1	Roundabout homolog 1
+KEGG:04360	Axon guidance	Nras	GTPase NRas
+KEGG:04360	Axon guidance	Dcc	Netrin receptor DCC
+KEGG:04360	Axon guidance	Sema5a	Semaphorin-5A
+KEGG:04360	Axon guidance	Ablim3	Actin-binding LIM protein 3
+KEGG:04360	Axon guidance	Camk2d	Calcium/calmodulin-dependent protein kinase type II subunit delta
+KEGG:04360	Axon guidance	Srgap2	SLIT-ROBO Rho GTPase-activating protein 2
+KEGG:04360	Axon guidance	Gnai3	Guanine nucleotide-binding protein G(i) subunit alpha-3
+KEGG:04360	Axon guidance	Gsk3b	Glycogen synthase kinase-3 beta
+GO:0044306	neuron projection terminus	Dpysl2	Dihydropyrimidinase-related protein 2
+GO:0044306	neuron projection terminus	Prss12	Neurotrypsin
+GO:0044306	neuron projection terminus	Hap1	Huntingtin-associated protein 1
+GO:0044306	neuron projection terminus	Clcn3	H(+)/Cl(-) exchange transporter 3
+GO:0044306	neuron projection terminus	Pgr	Progesterone receptor
+GO:0044306	neuron projection terminus	Kcna6	Potassium voltage-gated channel subfamily A member 6
+GO:0044306	neuron projection terminus	Git1	ARF GTPase-activating protein GIT1
+GO:0044306	neuron projection terminus	Atcay	Caytaxin
+GO:0044306	neuron projection terminus	Syt7	Synaptotagmin-7
+GO:0044306	neuron projection terminus	Uchl1	Ubiquitin carboxyl-terminal hydrolase isozyme L1
+GO:0044306	neuron projection terminus	Gria4	Glutamate receptor 4
+GO:0150034	distal axon	Dpysl2	Dihydropyrimidinase-related protein 2
+GO:0150034	distal axon	Prss12	Neurotrypsin
+GO:0150034	distal axon	Hap1	Huntingtin-associated protein 1
+GO:0150034	distal axon	Nefl	Neurofilament light polypeptide
+GO:0150034	distal axon	App	Amyloid-beta precursor protein
+GO:0150034	distal axon	Clcn3	H(+)/Cl(-) exchange transporter 3
+GO:0150034	distal axon	Dcc	Netrin receptor DCC
+GO:0150034	distal axon	Pgr	Progesterone receptor
+GO:0150034	distal axon	Myh10	Myosin-10
+GO:0150034	distal axon	Kcna6	Potassium voltage-gated channel subfamily A member 6
+GO:0150034	distal axon	Git1	ARF GTPase-activating protein GIT1
+GO:0150034	distal axon	Atcay	Caytaxin
+GO:0150034	distal axon	Myo9a	Unconventional myosin-IXa
+GO:0150034	distal axon	Shtn1	Shootin-1
+GO:0150034	distal axon	Nrxn1	Neurexin-1
+GO:0150034	distal axon	Syt7	Synaptotagmin-7
+GO:0150034	distal axon	Gsk3b	Glycogen synthase kinase-3 beta
+GO:0150034	distal axon	Gria4	Glutamate receptor 4
+GO:0001764	neuron migration	Stat3	Signal transducer and activator of transcription 3
+GO:0001764	neuron migration	Dcc	Netrin receptor DCC
+GO:0001764	neuron migration	Chl1	Neural cell adhesion molecule L1-like protein
+GO:0001764	neuron migration	Mdga1	MAM domain-containing glycosylphosphatidylinositol anchor protein 1
+GO:0001764	neuron migration	Myh10	Myosin-10
+GO:0001764	neuron migration	Ndnf	Protein NDNF
+GO:0001764	neuron migration	Shtn1	Shootin-1
+GO:0001764	neuron migration	Srgap2	SLIT-ROBO Rho GTPase-activating protein 2
+GO:0001764	neuron migration	Celsr2	Cadherin EGF LAG seven-pass G-type receptor 2
+GO:0001764	neuron migration	Lhx6	LIM/homeobox protein Lhx6
+GO:0001764	neuron migration	Gsk3b	Glycogen synthase kinase-3 beta
+GO:0034329	cell junction assembly	Pcdh17	Protocadherin 17
+GO:0034329	cell junction assembly	Nrxn2	Neurexin-2
+GO:0034329	cell junction assembly	Sema4d	Semaphorin-4D
+GO:0034329	cell junction assembly	S100a10	Protein S100-A10
+GO:0034329	cell junction assembly	App	Amyloid-beta precursor protein
+GO:0034329	cell junction assembly	Gabrb2	Gamma-aminobutyric acid receptor subunit beta-2
+GO:0034329	cell junction assembly	Cdh6	Cadherin-6
+GO:0034329	cell junction assembly	Mdga1	MAM domain-containing glycosylphosphatidylinositol anchor protein 1
+GO:0034329	cell junction assembly	Nlgn2	Neuroligin-2
+GO:0034329	cell junction assembly	Sdk2	Protein sidekick-2
+GO:0034329	cell junction assembly	Myo9a	Unconventional myosin-IXa
+GO:0034329	cell junction assembly	Ppm1f	Protein phosphatase 1F
+GO:0034329	cell junction assembly	Srgap2	SLIT-ROBO Rho GTPase-activating protein 2
+GO:0034329	cell junction assembly	Clstn3	Calsyntenin-3
+GO:0034329	cell junction assembly	Dusp22	Dual specificity protein phosphatase 22
+GO:0034329	cell junction assembly	Nrxn1	Neurexin-1
+GO:0034329	cell junction assembly	Gsk3b	Glycogen synthase kinase-3 beta
+GO:0050808	synapse organization	Lzts3	Leucine zipper putative tumor suppressor 3
+GO:0050808	synapse organization	Pcdh17	Protocadherin 17
+GO:0050808	synapse organization	Nrxn2	Neurexin-2
+GO:0050808	synapse organization	Sema4d	Semaphorin-4D
+GO:0050808	synapse organization	Nefl	Neurofilament light polypeptide
+GO:0050808	synapse organization	App	Amyloid-beta precursor protein
+GO:0050808	synapse organization	Gabrb2	Gamma-aminobutyric acid receptor subunit beta-2
+GO:0050808	synapse organization	Sparcl1	SPARC-like protein 1
+GO:0050808	synapse organization	Mdga1	MAM domain-containing glycosylphosphatidylinositol anchor protein 1
+GO:0050808	synapse organization	Myh10	Myosin-10
+GO:0050808	synapse organization	Git1	ARF GTPase-activating protein GIT1
+GO:0050808	synapse organization	Nlgn2	Neuroligin-2
+GO:0050808	synapse organization	Sdk2	Protein sidekick-2
+GO:0050808	synapse organization	Igsf21	Immunoglobulin superfamily member 21
+GO:0050808	synapse organization	Rims3	Regulating synaptic membrane exocytosis protein 3
+GO:0050808	synapse organization	Mfn2	Mitofusin-2
+GO:0050808	synapse organization	Pcdhgc4	Protocadherin gamma C4
+GO:0050808	synapse organization	Srgap2	SLIT-ROBO Rho GTPase-activating protein 2
+GO:0050808	synapse organization	Clstn3	Calsyntenin-3
+GO:0050808	synapse organization	Nrxn1	Neurexin-1
+GO:0050808	synapse organization	Gsk3b	Glycogen synthase kinase-3 beta
+GO:0032535	regulation of cellular component size	Shroom2	Protein Shroom2
+GO:0032535	regulation of cellular component size	Dpysl2	Dihydropyrimidinase-related protein 2
+GO:0032535	regulation of cellular component size	Sema4d	Semaphorin-4D
+GO:0032535	regulation of cellular component size	Nefl	Neurofilament light polypeptide
+GO:0032535	regulation of cellular component size	Ttl	Tubulin--tyrosine ligase
+GO:0032535	regulation of cellular component size	Clcn3	H(+)/Cl(-) exchange transporter 3
+GO:0032535	regulation of cellular component size	Fchsd2	F-BAR and double SH3 domains protein 2
+GO:0032535	regulation of cellular component size	Islr2	Immunoglobulin superfamily containing leucine-rich repeat protein 2
+GO:0032535	regulation of cellular component size	Sema5a	Semaphorin-5A
+GO:0032535	regulation of cellular component size	Fchsd1	F-BAR and double SH3 domains protein 1
+GO:0032535	regulation of cellular component size	Mfn2	Mitofusin-2
+GO:0032535	regulation of cellular component size	Shtn1	Shootin-1
+GO:0032535	regulation of cellular component size	Slc12a5	Solute carrier family 12 member 5
+GO:0032535	regulation of cellular component size	Arhgap35	Rho GTPase-activating protein 35
+GO:0032535	regulation of cellular component size	Abcb8	Mitochondrial potassium channel ATP-binding subunit
+GO:0032535	regulation of cellular component size	Akt1s1	Proline-rich AKT1 substrate 1
+GO:0032535	regulation of cellular component size	Akt3	RAC-gamma serine/threonine-protein kinase
+GO:0032535	regulation of cellular component size	Gsk3b	Glycogen synthase kinase-3 beta
+GO:0030427	site of polarized growth	Dpysl2	Dihydropyrimidinase-related protein 2
+GO:0030427	site of polarized growth	Hap1	Huntingtin-associated protein 1
+GO:0030427	site of polarized growth	Nefl	Neurofilament light polypeptide
+GO:0030427	site of polarized growth	App	Amyloid-beta precursor protein
+GO:0030427	site of polarized growth	Dcc	Netrin receptor DCC
+GO:0030427	site of polarized growth	Myh10	Myosin-10
+GO:0030427	site of polarized growth	Atcay	Caytaxin
+GO:0030427	site of polarized growth	Myo9a	Unconventional myosin-IXa
+GO:0030427	site of polarized growth	Shtn1	Shootin-1
+GO:0030427	site of polarized growth	Nrxn1	Neurexin-1
+GO:0030427	site of polarized growth	Gsk3b	Glycogen synthase kinase-3 beta
+GO:0099003	vesicle-mediated transport in synapse	Pcdh17	Protocadherin 17
+GO:0099003	vesicle-mediated transport in synapse	Hap1	Huntingtin-associated protein 1
+GO:0099003	vesicle-mediated transport in synapse	Eps15	Epidermal growth factor receptor substrate 15
+GO:0099003	vesicle-mediated transport in synapse	Clcn3	H(+)/Cl(-) exchange transporter 3
+GO:0099003	vesicle-mediated transport in synapse	Doc2b	Double C2-like domain-containing protein beta
+GO:0099003	vesicle-mediated transport in synapse	Git1	ARF GTPase-activating protein GIT1
+GO:0099003	vesicle-mediated transport in synapse	Nlgn2	Neuroligin-2
+GO:0099003	vesicle-mediated transport in synapse	Dnajc6	Putative tyrosine-protein phosphatase auxilin
+GO:0099003	vesicle-mediated transport in synapse	Rims3	Regulating synaptic membrane exocytosis protein 3
+GO:0099003	vesicle-mediated transport in synapse	Ap3s2	AP-3 complex subunit sigma-2
+GO:0099003	vesicle-mediated transport in synapse	Stxbp5	Syntaxin-binding protein 5
+GO:0099003	vesicle-mediated transport in synapse	Nrxn1	Neurexin-1
+GO:0099003	vesicle-mediated transport in synapse	Syt7	Synaptotagmin-7
+GO:0099003	vesicle-mediated transport in synapse	Gsk3b	Glycogen synthase kinase-3 beta
+GO:0044309	neuron spine	Lzts3	Leucine zipper putative tumor suppressor 3
+GO:0044309	neuron spine	Hap1	Huntingtin-associated protein 1
+GO:0044309	neuron spine	App	Amyloid-beta precursor protein
+GO:0044309	neuron spine	Nrgn	Neurogranin
+GO:0044309	neuron spine	Slc8a1	Sodium/calcium exchanger 1
+GO:0044309	neuron spine	Pgr	Progesterone receptor
+GO:0044309	neuron spine	Kif3b	Kinesin-like protein KIF3B
+GO:0044309	neuron spine	Myh10	Myosin-10
+GO:0044309	neuron spine	Srgap2	SLIT-ROBO Rho GTPase-activating protein 2
+GO:0044309	neuron spine	Gsk3b	Glycogen synthase kinase-3 beta
+GO:0044309	neuron spine	Gria4	Glutamate receptor 4
+GO:0070997	neuron death	Bok	Bcl-2-related ovarian killer protein
+GO:0070997	neuron death	Sorl1	Sortilin-related receptor
+GO:0070997	neuron death	Igf1	Insulin-like growth factor I
+GO:0070997	neuron death	Nefl	Neurofilament light polypeptide
+GO:0070997	neuron death	App	Amyloid-beta precursor protein
+GO:0070997	neuron death	Ccnd1	G1/S-specific cyclin-D1
+GO:0070997	neuron death	Stat3	Signal transducer and activator of transcription 3
+GO:0070997	neuron death	Hdgf	Hepatoma-derived growth factor
+GO:0070997	neuron death	Gabrb2	Gamma-aminobutyric acid receptor subunit beta-2
+GO:0070997	neuron death	Dcc	Netrin receptor DCC
+GO:0070997	neuron death	Chl1	Neural cell adhesion molecule L1-like protein
+GO:0070997	neuron death	Casp3	Caspase-3
+GO:0070997	neuron death	Gsk3a	Glycogen synthase kinase-3 alpha
+GO:0070997	neuron death	Sarm1	NAD(+) hydrolase SARM1
+GO:0070997	neuron death	Mfn2	Mitofusin-2
+GO:0070997	neuron death	Ndnf	Protein NDNF
+GO:0070997	neuron death	Pcdhgc4	Protocadherin gamma C4
+GO:0070997	neuron death	Akt1s1	Proline-rich AKT1 substrate 1
+GO:0070997	neuron death	Gsk3b	Glycogen synthase kinase-3 beta
+GO:0048588	developmental cell growth	Raph1	Ras association (RalGDS/AF-6) and pleckstrin homology domains 1
+GO:0048588	developmental cell growth	Dpysl2	Dihydropyrimidinase-related protein 2
+GO:0048588	developmental cell growth	Rgs4	Regulator of G-protein signaling 4
+GO:0048588	developmental cell growth	Sema4d	Semaphorin-4D
+GO:0048588	developmental cell growth	Igf1	Insulin-like growth factor I
+GO:0048588	developmental cell growth	App	Amyloid-beta precursor protein
+GO:0048588	developmental cell growth	Ttl	Tubulin--tyrosine ligase
+GO:0048588	developmental cell growth	Gsk3a	Glycogen synthase kinase-3 alpha
+GO:0048588	developmental cell growth	Islr2	Immunoglobulin superfamily containing leucine-rich repeat protein 2
+GO:0048588	developmental cell growth	Alcam	CD166 antigen
+GO:0048588	developmental cell growth	Sema5a	Semaphorin-5A
+GO:0048588	developmental cell growth	Camk2d	Calcium/calmodulin-dependent protein kinase type II subunit delta
+GO:0048588	developmental cell growth	Shtn1	Shootin-1
+GO:0048588	developmental cell growth	Gsk3b	Glycogen synthase kinase-3 beta
+GO:0051020	GTPase binding	Clta	Clathrin light chain A
+GO:0051020	GTPase binding	Sorl1	Sortilin-related receptor
+GO:0051020	GTPase binding	Ap1g1	AP-1 complex subunit gamma-1
+GO:0051020	GTPase binding	Rangap1	Ran GTPase-activating protein 1
+GO:0051020	GTPase binding	Kif3b	Kinesin-like protein KIF3B
+GO:0051020	GTPase binding	Git1	ARF GTPase-activating protein GIT1
+GO:0051020	GTPase binding	Dennd5a	DENN domain-containing protein 5A
+GO:0051020	GTPase binding	Rims3	Regulating synaptic membrane exocytosis protein 3
+GO:0051020	GTPase binding	Mfn2	Mitofusin-2
+GO:0051020	GTPase binding	Tmem127	Transmembrane protein 127
+GO:0051020	GTPase binding	Daam1	Disheveled-associated activator of morphogenesis 1
+GO:0051020	GTPase binding	Dmxl2	DmX-like protein 2
+GO:0051020	GTPase binding	Rab11fip4	Rab11 family-interacting protein 4
+GO:0051020	GTPase binding	Srgap2	SLIT-ROBO Rho GTPase-activating protein 2
+GO:0016358	dendrite development	Lzts3	Leucine zipper putative tumor suppressor 3
+GO:0016358	dendrite development	Sema4d	Semaphorin-4D
+GO:0016358	dendrite development	App	Amyloid-beta precursor protein
+GO:0016358	dendrite development	Gsk3a	Glycogen synthase kinase-3 alpha
+GO:0016358	dendrite development	Git1	ARF GTPase-activating protein GIT1
+GO:0016358	dendrite development	Nlgn2	Neuroligin-2
+GO:0016358	dendrite development	Sarm1	NAD(+) hydrolase SARM1
+GO:0016358	dendrite development	Mfn2	Mitofusin-2
+GO:0016358	dendrite development	Rbfox2	RNA binding protein fox-1 homolog 2
+GO:0016358	dendrite development	Ss18l1	Calcium-responsive transactivator
+GO:0016358	dendrite development	Camsap2	Calmodulin-regulated spectrin-associated protein 2
+GO:0016358	dendrite development	Hecw1	E3 ubiquitin-protein ligase HECW1
+GO:0016358	dendrite development	Slc12a5	Solute carrier family 12 member 5
+GO:0016358	dendrite development	Srgap2	SLIT-ROBO Rho GTPase-activating protein 2
+GO:0016358	dendrite development	Map1a	Microtubule-associated protein 1A
+GO:0016358	dendrite development	Celsr2	Cadherin EGF LAG seven-pass G-type receptor 2
+GO:0016358	dendrite development	Gsk3b	Glycogen synthase kinase-3 beta
+GO:0030900	forebrain development	Chd5	Chromodomain-helicase-DNA-binding protein 5
+GO:0030900	forebrain development	Hap1	Huntingtin-associated protein 1
+GO:0030900	forebrain development	Robo1	Roundabout homolog 1
+GO:0030900	forebrain development	Nefl	Neurofilament light polypeptide
+GO:0030900	forebrain development	App	Amyloid-beta precursor protein
+GO:0030900	forebrain development	Atp1b2	Sodium/potassium-transporting ATPase subunit beta-2
+GO:0030900	forebrain development	Nrgn	Neurogranin
+GO:0030900	forebrain development	Slc8a1	Sodium/calcium exchanger 1
+GO:0030900	forebrain development	Casp3	Caspase-3
+GO:0030900	forebrain development	Mdga1	MAM domain-containing glycosylphosphatidylinositol anchor protein 1
+GO:0030900	forebrain development	Myh10	Myosin-10
+GO:0030900	forebrain development	Sema5a	Semaphorin-5A
+GO:0030900	forebrain development	Srd5a1	3-oxo-5-alpha-steroid 4-dehydrogenase 1
+GO:0030900	forebrain development	Dmxl2	DmX-like protein 2
+GO:0030900	forebrain development	Ndnf	Protein NDNF
+GO:0030900	forebrain development	Slc38a2	Sodium-coupled neutral amino acid transporter 2
+GO:0030900	forebrain development	Arhgap35	Rho GTPase-activating protein 35
+GO:0030900	forebrain development	Srgap2	SLIT-ROBO Rho GTPase-activating protein 2
+GO:0030900	forebrain development	Aldh1a3	Aldehyde dehydrogenase family 1 member A3
+GO:0030900	forebrain development	Lhx6	LIM/homeobox protein Lhx6
+GO:0030900	forebrain development	Gsk3b	Glycogen synthase kinase-3 beta
+GO:0030900	forebrain development	Plcb1	1-phosphatidylinositol 4,5-bisphosphate phosphodiesterase beta-1
+GO:0030336	negative regulation of cell migration	Ptpru	Receptor-type tyrosine-protein phosphatase U
+GO:0030336	negative regulation of cell migration	Robo1	Roundabout homolog 1
+GO:0030336	negative regulation of cell migration	Atp1b2	Sodium/potassium-transporting ATPase subunit beta-2
+GO:0030336	negative regulation of cell migration	Stat3	Signal transducer and activator of transcription 3
+GO:0030336	negative regulation of cell migration	Rap2b	Ras-related protein Rap-2b
+GO:0030336	negative regulation of cell migration	Nbl1	Neuroblastoma suppressor of tumorigenicity 1
+GO:0030336	negative regulation of cell migration	Adipor2	Adiponectin receptor protein 2
+GO:0030336	negative regulation of cell migration	Rap2c	Ras-related protein Rap-2c
+GO:0030336	negative regulation of cell migration	Vash1	Tubulinyl-Tyr carboxypeptidase 1
+GO:0030336	negative regulation of cell migration	Srgap2	SLIT-ROBO Rho GTPase-activating protein 2
+GO:0030336	negative regulation of cell migration	Dusp22	Dual specificity protein phosphatase 22
+GO:0030336	negative regulation of cell migration	Gsk3b	Glycogen synthase kinase-3 beta
+GO:0030336	negative regulation of cell migration	Plcb1	1-phosphatidylinositol 4,5-bisphosphate phosphodiesterase beta-1
+GO:0030336	negative regulation of cell migration	Hdac5	Histone deacetylase 5
+GO:1901653	cellular response to peptide	Rap1gds1	Rap1 GTPase-GDP dissociation stimulator 1
+GO:1901653	cellular response to peptide	Sorl1	Sortilin-related receptor
+GO:1901653	cellular response to peptide	Igf1	Insulin-like growth factor I
+GO:1901653	cellular response to peptide	App	Amyloid-beta precursor protein
+GO:1901653	cellular response to peptide	Stat3	Signal transducer and activator of transcription 3
+GO:1901653	cellular response to peptide	Rangap1	Ran GTPase-activating protein 1
+GO:1901653	cellular response to peptide	Gsk3a	Glycogen synthase kinase-3 alpha
+GO:1901653	cellular response to peptide	Gpam	Glycerol-3-phosphate acyltransferase 1, mitochondrial
+GO:1901653	cellular response to peptide	Srd5a1	3-oxo-5-alpha-steroid 4-dehydrogenase 1
+GO:1901653	cellular response to peptide	Mfn2	Mitofusin-2
+GO:1901653	cellular response to peptide	Nucks1	Nuclear ubiquitous casein and cyclin-dependent kinase substrate 1
+GO:1901653	cellular response to peptide	Cpeb2	Cytoplasmic polyadenylation element-binding protein 2
+GO:1901653	cellular response to peptide	Sesn3	Sestrin-3
+GO:1901653	cellular response to peptide	Akt3	RAC-gamma serine/threonine-protein kinase
+GO:1901653	cellular response to peptide	Gsk3b	Glycogen synthase kinase-3 beta
+GO:1901653	cellular response to peptide	Plcb1	1-phosphatidylinositol 4,5-bisphosphate phosphodiesterase beta-1
+GO:0021700	developmental maturation	Sema4d	Semaphorin-4D
+GO:0021700	developmental maturation	Igf1	Insulin-like growth factor I
+GO:0021700	developmental maturation	Nefl	Neurofilament light polypeptide
+GO:0021700	developmental maturation	App	Amyloid-beta precursor protein
+GO:0021700	developmental maturation	Ap1g1	AP-1 complex subunit gamma-1
+GO:0021700	developmental maturation	Clcn3	H(+)/Cl(-) exchange transporter 3
+GO:0021700	developmental maturation	Pgr	Progesterone receptor
+GO:0021700	developmental maturation	Igsf21	Immunoglobulin superfamily member 21
+GO:0021700	developmental maturation	Ptbp3	Polypyrimidine tract-binding protein 3
+GO:0021700	developmental maturation	Nrxn1	Neurexin-1
+GO:0021700	developmental maturation	Fam210b	Protein FAM210B, mitochondrial
+GO:0021700	developmental maturation	Bloc1s6	Biogenesis of lysosome-related organelles complex 1 subunit 6
+GO:0021700	developmental maturation	Lhx6	LIM/homeobox protein Lhx6
+GO:0021700	developmental maturation	Gsk3b	Glycogen synthase kinase-3 beta
+GO:0021700	developmental maturation	Plcb1	1-phosphatidylinositol 4,5-bisphosphate phosphodiesterase beta-1
+GO:0040013	negative regulation of locomotion	Ptpru	Receptor-type tyrosine-protein phosphatase U
+GO:0040013	negative regulation of locomotion	Sema4d	Semaphorin-4D
+GO:0040013	negative regulation of locomotion	Robo1	Roundabout homolog 1
+GO:0040013	negative regulation of locomotion	Atp1b2	Sodium/potassium-transporting ATPase subunit beta-2
+GO:0040013	negative regulation of locomotion	Stat3	Signal transducer and activator of transcription 3
+GO:0040013	negative regulation of locomotion	Rap2b	Ras-related protein Rap-2b
+GO:0040013	negative regulation of locomotion	Nbl1	Neuroblastoma suppressor of tumorigenicity 1
+GO:0040013	negative regulation of locomotion	Sema5a	Semaphorin-5A
+GO:0040013	negative regulation of locomotion	Adipor2	Adiponectin receptor protein 2
+GO:0040013	negative regulation of locomotion	Rap2c	Ras-related protein Rap-2c
+GO:0040013	negative regulation of locomotion	Vash1	Tubulinyl-Tyr carboxypeptidase 1
+GO:0040013	negative regulation of locomotion	Srgap2	SLIT-ROBO Rho GTPase-activating protein 2
+GO:0040013	negative regulation of locomotion	Dusp22	Dual specificity protein phosphatase 22
+GO:0040013	negative regulation of locomotion	Gsk3b	Glycogen synthase kinase-3 beta
+GO:0040013	negative regulation of locomotion	Plcb1	1-phosphatidylinositol 4,5-bisphosphate phosphodiesterase beta-1
+GO:0040013	negative regulation of locomotion	Hdac5	Histone deacetylase 5
+GO:0051962	positive regulation of nervous system development	Sema4d	Semaphorin-4D
+GO:0051962	positive regulation of nervous system development	Hap1	Huntingtin-associated protein 1
+GO:0051962	positive regulation of nervous system development	Robo1	Roundabout homolog 1
+GO:0051962	positive regulation of nervous system development	Igf1	Insulin-like growth factor I
+GO:0051962	positive regulation of nervous system development	Nefl	Neurofilament light polypeptide
+GO:0051962	positive regulation of nervous system development	Islr2	Immunoglobulin superfamily containing leucine-rich repeat protein 2
+GO:0051962	positive regulation of nervous system development	Sema5a	Semaphorin-5A
+GO:0051962	positive regulation of nervous system development	Nlgn2	Neuroligin-2
+GO:0051962	positive regulation of nervous system development	Mfn2	Mitofusin-2
+GO:0051962	positive regulation of nervous system development	Ss18l1	Calcium-responsive transactivator
+GO:0051962	positive regulation of nervous system development	Shtn1	Shootin-1
+GO:0051962	positive regulation of nervous system development	Clstn3	Calsyntenin-3
+GO:0051962	positive regulation of nervous system development	Nrxn1	Neurexin-1
+GO:0051962	positive regulation of nervous system development	Gsk3b	Glycogen synthase kinase-3 beta
+GO:0051962	positive regulation of nervous system development	Slc7a5	Large neutral amino acids transporter small subunit 1
+GO:0015631	tubulin binding	Dpysl2	Dihydropyrimidinase-related protein 2
+GO:0015631	tubulin binding	Hdgf	Hepatoma-derived growth factor
+GO:0015631	tubulin binding	Eml1	Echinoderm microtubule-associated protein-like 1
+GO:0015631	tubulin binding	Ccser2	Serine-rich coiled-coil domain-containing protein 2
+GO:0015631	tubulin binding	Mapre1	Microtubule-associated protein RP/EB family member 1
+GO:0015631	tubulin binding	Kif3b	Kinesin-like protein KIF3B
+GO:0015631	tubulin binding	Git1	ARF GTPase-activating protein GIT1
+GO:0015631	tubulin binding	Lrpprc	Leucine-rich PPR motif-containing protein, mitochondrial
+GO:0015631	tubulin binding	Camsap2	Calmodulin-regulated spectrin-associated protein 2
+GO:0015631	tubulin binding	Ttll5	Tubulin polyglutamylase TTLL5
+GO:0015631	tubulin binding	Katnal1	Katanin p60 ATPase-containing subunit A-like 1
+GO:0015631	tubulin binding	Jmy	Junction-mediating and -regulatory protein
+GO:0015631	tubulin binding	Macf1	Microtubule-actin cross-linking factor 1, isoforms 1/2/3/4
+GO:0015631	tubulin binding	Map1a	Microtubule-associated protein 1A
+GO:0015631	tubulin binding	Spast	Spastin
+GO:0098984	neuron to neuron synapse	Lzts3	Leucine zipper putative tumor suppressor 3
+GO:0098984	neuron to neuron synapse	Atp1b2	Sodium/potassium-transporting ATPase subunit beta-2
+GO:0098984	neuron to neuron synapse	Stat3	Signal transducer and activator of transcription 3
+GO:0098984	neuron to neuron synapse	Epb41	Protein 4.1
+GO:0098984	neuron to neuron synapse	Nrgn	Neurogranin
+GO:0098984	neuron to neuron synapse	Git1	ARF GTPase-activating protein GIT1
+GO:0098984	neuron to neuron synapse	Dnajc6	Putative tyrosine-protein phosphatase auxilin
+GO:0098984	neuron to neuron synapse	Stxbp5	Syntaxin-binding protein 5
+GO:0098984	neuron to neuron synapse	Atp1a1	Sodium/potassium-transporting ATPase subunit alpha-1
+GO:0098984	neuron to neuron synapse	Srgap2	SLIT-ROBO Rho GTPase-activating protein 2
+GO:0098984	neuron to neuron synapse	Clstn3	Calsyntenin-3
+GO:0098984	neuron to neuron synapse	Nrxn1	Neurexin-1
+GO:0098984	neuron to neuron synapse	Map1a	Microtubule-associated protein 1A
+GO:0098984	neuron to neuron synapse	Syt7	Synaptotagmin-7
+GO:0098984	neuron to neuron synapse	Gsk3b	Glycogen synthase kinase-3 beta
+GO:0098984	neuron to neuron synapse	Gria4	Glutamate receptor 4
+GO:0005819	spindle	Map7d1	MAP7 domain-containing protein 1
+GO:0005819	spindle	Bod1l	Biorientation of chromosomes in cell division protein 1-like 1
+GO:0005819	spindle	Limk2	LIM domain kinase 2
+GO:0005819	spindle	App	Amyloid-beta precursor protein
+GO:0005819	spindle	Ttl	Tubulin--tyrosine ligase
+GO:0005819	spindle	Rangap1	Ran GTPase-activating protein 1
+GO:0005819	spindle	Epb41	Protein 4.1
+GO:0005819	spindle	Eml1	Echinoderm microtubule-associated protein-like 1
+GO:0005819	spindle	Spout1	Putative methyltransferase C9orf114 homolog
+GO:0005819	spindle	Mapre1	Microtubule-associated protein RP/EB family member 1
+GO:0005819	spindle	Kif3b	Kinesin-like protein KIF3B
+GO:0005819	spindle	Myh10	Myosin-10
+GO:0005819	spindle	Git1	ARF GTPase-activating protein GIT1
+GO:0005819	spindle	Katnal1	Katanin p60 ATPase-containing subunit A-like 1
+GO:0005819	spindle	Dync1li1	Cytoplasmic dynein 1 light intermediate chain 1
+GO:0005819	spindle	Spast	Spastin
+GO:0003779	actin binding	Shroom2	Protein Shroom2
+GO:0003779	actin binding	Epb41l2	Band 4.1-like protein 2
+GO:0003779	actin binding	Wipf3	WAS/WASL-interacting protein family member 3
+GO:0003779	actin binding	Epb41	Protein 4.1
+GO:0003779	actin binding	Hdgf	Hepatoma-derived growth factor
+GO:0003779	actin binding	Myh10	Myosin-10
+GO:0003779	actin binding	Ablim3	Actin-binding LIM protein 3
+GO:0003779	actin binding	Daam1	Disheveled-associated activator of morphogenesis 1
+GO:0003779	actin binding	Coro2a	Coronin-2A
+GO:0003779	actin binding	Myo9a	Unconventional myosin-IXa
+GO:0003779	actin binding	Vash1	Tubulinyl-Tyr carboxypeptidase 1
+GO:0003779	actin binding	Shtn1	Shootin-1
+GO:0003779	actin binding	Panx1	Pannexin-1
+GO:0003779	actin binding	Jmy	Junction-mediating and -regulatory protein
+GO:0003779	actin binding	Macf1	Microtubule-actin cross-linking factor 1, isoforms 1/2/3/4
+GO:0003779	actin binding	Map1a	Microtubule-associated protein 1A
+GO:0003779	actin binding	Bloc1s6	Biogenesis of lysosome-related organelles complex 1 subunit 6
+GO:0003779	actin binding	Epb41l1	Band 4.1-like protein 1
+GO:0005874	microtubule	Shroom2	Protein Shroom2
+GO:0005874	microtubule	Bod1l	Biorientation of chromosomes in cell division protein 1-like 1
+GO:0005874	microtubule	Dpysl2	Dihydropyrimidinase-related protein 2
+GO:0005874	microtubule	Ttl	Tubulin--tyrosine ligase
+GO:0005874	microtubule	Slc8a1	Sodium/calcium exchanger 1
+GO:0005874	microtubule	Eml1	Echinoderm microtubule-associated protein-like 1
+GO:0005874	microtubule	Gsk3a	Glycogen synthase kinase-3 alpha
+GO:0005874	microtubule	Mapre1	Microtubule-associated protein RP/EB family member 1
+GO:0005874	microtubule	Kif3b	Kinesin-like protein KIF3B
+GO:0005874	microtubule	Lrpprc	Leucine-rich PPR motif-containing protein, mitochondrial
+GO:0005874	microtubule	Sarm1	NAD(+) hydrolase SARM1
+GO:0005874	microtubule	Camsap2	Calmodulin-regulated spectrin-associated protein 2
+GO:0005874	microtubule	Ttll5	Tubulin polyglutamylase TTLL5
+GO:0005874	microtubule	Katnal1	Katanin p60 ATPase-containing subunit A-like 1
+GO:0005874	microtubule	Shtn1	Shootin-1
+GO:0005874	microtubule	Dync1li1	Cytoplasmic dynein 1 light intermediate chain 1
+GO:0005874	microtubule	Dync1h1	Cytoplasmic dynein 1 heavy chain 1
+GO:0005874	microtubule	Macf1	Microtubule-actin cross-linking factor 1, isoforms 1/2/3/4
+GO:0005874	microtubule	Map1a	Microtubule-associated protein 1A
+GO:0005874	microtubule	Spast	Spastin
+GO:0005874	microtubule	Gsk3b	Glycogen synthase kinase-3 beta
+GO:0098978	glutamatergic synapse	Pcdh17	Protocadherin 17
+GO:0098978	glutamatergic synapse	Stat3	Signal transducer and activator of transcription 3
+GO:0098978	glutamatergic synapse	Eps15	Epidermal growth factor receptor substrate 15
+GO:0098978	glutamatergic synapse	Clcn3	H(+)/Cl(-) exchange transporter 3
+GO:0098978	glutamatergic synapse	Nrgn	Neurogranin
+GO:0098978	glutamatergic synapse	Sparcl1	SPARC-like protein 1
+GO:0098978	glutamatergic synapse	Myh10	Myosin-10
+GO:0098978	glutamatergic synapse	Git1	ARF GTPase-activating protein GIT1
+GO:0098978	glutamatergic synapse	Ablim3	Actin-binding LIM protein 3
+GO:0098978	glutamatergic synapse	Rims3	Regulating synaptic membrane exocytosis protein 3
+GO:0098978	glutamatergic synapse	Clstn3	Calsyntenin-3
+GO:0098978	glutamatergic synapse	Nrxn1	Neurexin-1
+GO:0098978	glutamatergic synapse	Syt7	Synaptotagmin-7
+GO:0098978	glutamatergic synapse	Adam22	Disintegrin and metalloproteinase domain-containing protein 22
+GO:0098978	glutamatergic synapse	Gsk3b	Glycogen synthase kinase-3 beta
+GO:0098978	glutamatergic synapse	Plcb1	1-phosphatidylinositol 4,5-bisphosphate phosphodiesterase beta-1
+GO:0098978	glutamatergic synapse	Gria4	Glutamate receptor 4

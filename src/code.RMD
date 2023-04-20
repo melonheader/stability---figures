@@ -1,0 +1,2018 @@
+---
+title: "code"
+author: "melonheader"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = F)
+```
+
+##########
+## INFO ##
+##########
+This R notebook contains the source code for the plots that are used in 
+the manuscript from 03.04.2023
+
+
+```{r}
+## HEADER
+set.seed(42)
+
+library(tidyverse)
+library(GGally)
+library(Guitar)
+library(tictoc)
+library(ggridges)
+library(DESeq2)
+library(purrr)
+library(janitor)
+library(patchwork)
+library(magrittr)
+library(gprofiler2)
+
+## auxiliary
+source("F_HelpersMetaprofile.R")
+source("F_HelpersRNAseq.R")
+source("F_HelpersDistMod.R")
+source("F_miscellaneous.R")
+## loc pal 3 way
+pal_loc.3way <- c(Projections = "#82b21e", Cytoplasm = "#006beb", 
+                  NS = "gray50", Nucleus = "#236477")
+## loc pal 2 way
+pal_loc.2way <- c(Neurite = "#82b21e", NS = "gray50", Soma = "#006beb")
+
+##
+pal_mut <- c(GFP = "steelblue3", NS = "gray50", dnCaf1 = "orangered3")
+##
+pal_mut.msa <- c("#f18ea3", "grey50", "#481f31")
+##
+pal_msa <- c("#009cb8", "grey50", "#d64ecf")
+
+
+mm10Ann <- read_tsv("../data/mm10_annotation.tsv", show_col_types = F)
+
+
+##
+ggplot2::theme_set(theme_bw(base_size = 14) +
+                     theme(panel.border = element_blank(),
+                           axis.line = element_line(size = 0.25, color = "black"), 
+                           axis.ticks = element_line(size = 0.25, color = "black"),
+                           axis.text = element_text(color = "black"),
+                           legend.background = element_blank()
+                     )
+)
+```
+
+
+
+########################################################
+#   1. m6A related plots  
+################################################################################
+## 1.1 Grid of correlation plots. 
+Log2FoldChagnes from m6A-RIPseqs are plotted against each other.
+Either IP vs Flow or IP vs Input are used. Right-upper triangle of the plot grid shows Pearson correlations between the respective datasets in the left-lower triangle.
+```{r}
+de_m6a <- read_rds("../data/m6ARIP.lg2fc_list.RDS")
+de_m6a_plot <- purrr::map2(de_m6a, 
+                           names(de_m6a),
+                           ~ .x %>% 
+                             filter(log2(baseMean) > 5.5) %>% 
+                             dplyr::select(gene, log2FoldChange) %>% 
+                             `colnames<-`(c("gene", paste0(.y)))) %>% 
+  purrr::reduce(., inner_join, by = "gene") %>% 
+  `[`(, c("gene", 
+          "soft-filt_outfilt_IP_unfr_m6a.sysy_vs_FLOW_unfr_m6a.sysy",
+          "soft-filt_outfilt_IP_unfr_m6a.abcam_vs_FLOW_unfr_m6a.abcam", 
+          "soft-filt_IP_fr_m6a.sysy_vs_INPUT_fr_total", 
+          "soft-filt_IP_fr_m6a.abcam_vs_INPUT_fr_total", 
+          "soft-filt_ip_synaptosome_vs_input_synaptosome",
+          "soft-filt_ip_homogenized_forebrain_vs_input_homogenized_forebrain",
+          "soft-filt_outfilt_m6Am_RIP_WT_vs_input_RNA_WT"
+          )
+      ) %>%  
+  `colnames<-`(c("gene", 
+                 "A", 
+                 "B", 
+                 "C", 
+                 "D",  
+                 "E", 
+                 "F", 
+                 "G")
+               )
+
+# Check correlations (as scatterplots), distribution and print corrleation coefficient 
+my_point <- function(data, mapping, ..., low = "#132B43", high = "#56B1F7") {
+  ggplot(data = data, mapping = mapping) +
+    #geom_point(...) +
+    geom_bin2d(binwidth = 0.5, ...) +
+    #geom_smooth(y ~ x, method = "lm", se = F) +
+    scale_fill_viridis_c() +
+    #scale_fill_gradient(low = low, high = high) + 
+    scale_x_continuous(breaks = c(-2.5, 0, 2.5), limits = c(-5, 5)) +
+    scale_y_continuous(breaks = c(-2.5, 0, 2.5), limits = c(-5, 5))
+}
+
+ggpairs(de_m6a_plot[, -1], 
+        title = "m6A datasets comparison",
+        legend = c(2, 1),
+        lower = list( 
+         continuous = my_point
+         ), 
+        progress = FALSE) -> p.1.1
+
+
+ggsave(filename = "../output/p.1.1.pdf", p.1.1)
+```
+
+
+################################################################################
+## 1.2 Grid showing intersections between m6A-peaks called from different m6ARIP-seqs datasets.
+Left-upper triangle of the grid shows the number of intersecting peaks between datasets on X agaisnt datasets on Y.
+Right-lower triangle shows the opposite, i.e. datasets on Y against X.
+```{r}
+intersect_files <- list.files("../data/PeakCalls/Intersections/", 
+                              pattern = "inter", 
+                              full.names = T) %>% 
+  grep("-KO", ., value = T, invert = T)
+
+# create alphabet for msa datasets
+alphbet_msa <- tibble(id_msa = c("3", "4", "5", "6", "7"), 
+                      dataset_msa = c("m6A_Sysy",
+                                      "m6A_Abcam", 
+                                      "Merkurjev_Synaptosome", 
+                                      "Merkurjev_Homogenized-brain", 
+                                      "Engel_WT"))
+
+names(intersect_files) <- basename(intersect_files) %>% 
+  str_remove_all(., ".bed_intersect_out.bed") %>% 
+  enframe() %>% 
+  left_join(., alphbet_msa, by = c("value" = "dataset_msa")) %>% 
+  pull(id_msa)
+
+int_dat <- purrr::map2(intersect_files, 
+                       names(intersect_files), 
+                       ~ read_tsv(.x, col_names = F, show_col_types = F) %>% 
+                         group_by(X13) %>% 
+                         summarise(int_count = n()) %>% 
+                         ungroup() %>% 
+                         dplyr::mutate(query_bed = .y, 
+                                       X13 = str_remove_all(X13, ".bed")) %>% 
+                         dplyr::rename(base_bed = X13)) %>% 
+  purrr::reduce(., rbind) %>% 
+  filter(!base_bed %in% c("Engel_FTO-KO", "Engel_Mettl-KO")) %>%
+  inner_join(., 
+             alphbet_msa, 
+             by = c("base_bed" = "dataset_msa")
+             ) %>% 
+  mutate(base_bed = factor(id_msa, levels = c("3", "4", "5", "6", "7")),
+         query_bed = factor(query_bed, levels = c("3", "4", "5", "6", "7")), 
+				 color_var = ifelse(query_bed != id_msa, "comp", "same")) 
+
+##
+ggplot(data = int_dat, 
+       aes(x = query_bed, 
+           y = base_bed, 
+           fill = int_count)) + 
+  geom_tile(aes(color = color_var), 
+            linejoin = "bevel",
+            width=.9, height=.9, 
+            size = 0.5) + 
+  scale_color_manual(values = c(adjustcolor("#333333", alpha.f = 0.1), "red")) +
+  scale_fill_gradient(low = "#e5ebf0", 
+                      high = "#325f87") +
+  geom_text(aes(label = int_count)) +
+  theme(axis.text.x = element_text(angle = 0), axis.text.y = element_text(angle = 0)) +
+  labs(fill = "Peak intersection, n", y = "", x = "") + 
+  guides(color = "none") -> p.1.2
+
+ggsave(filename = "../output/p.1.2.pdf", p.1.2)
+```
+
+
+################################################################################
+## 1.3 MA-plots for total(unfragmented) m6ARIPseq datasets.
+Mean abundance is plotted against lg2FC between eluate and flowthrough.
+Each plot corresponds to separate antibody that are labeled within the code.
+```{r}
+## Abcam antibody
+plot_ma(de_res = de_m6a$`soft-filt_outfilt_IP_unfr_m6a.abcam_vs_FLOW_unfr_m6a.abcam`, 
+        lg2cts_cutoff = 5.5, lg2fc_cutoff = 1, padj_cutoff = 0.05, y_cutoff = c(-10, 10),
+        custom_palette = pal_msa[c(1, 3, 2)], empty = F) -> p.1.3.abcam
+## Sysy antibody
+plot_ma(de_res = de_m6a$`soft-filt_outfilt_IP_unfr_m6a.sysy_vs_FLOW_unfr_m6a.sysy`, 
+        lg2cts_cutoff = 5.5, lg2fc_cutoff = 1, padj_cutoff = 0.05, y_cutoff = c(-10, 10),
+        custom_palette = pal_msa[c(1, 3, 2)], empty = F) -> p.1.3.sysy
+
+purrr::map2(c("p.1.3.abcam", "p.1.3.sysy"),
+            list(p.1.3.abcam, p.1.3.sysy),
+            ~ ggsave(filename = paste0("../output/", .x, ".pdf"), .y))
+```
+
+
+################################################################################
+## 1.4 Metagene-profile plot.
+Shows the distribution of the detected m6A peaks along the features of a metagene. 
+ 
+ !Alert: access to the GTF annotation that was used for the original plot is currently restricted on the server. 
+ Same version of the annotation that was reported in the initial code was downloaded from Ensembl (line 304)
+ 
+```{r, eval=F}
+# import different data formats into a named list object.
+# These genomic features are using mm10 genome assembly
+peak_dir <- "../data/PeakCalls/m6a_fragmented"
+peak_sites <- list(file.path(peak_dir, "m6a_fragmented_IP_fr_m6a-abcam", "con_peak.bed"), 
+                   file.path(peak_dir, "m6a_fragmented_IP_fr_m6a-sysy", "con_peak.bed"))
+tx_gtf <- "../data/Mus_musculus.GRCm38.96.gtf" 
+
+# Get table for metprofile plotting
+tic()
+metap_list <- get_metaprofile_tab(txGTF = tx_gtf,
+                                  stBedFiles = peak_sites,
+                                  headOrtail = TRUE,
+                                  enableCI = FALSE,
+                                  mapFilterTranscript = TRUE,
+                                  pltTxType = c("mrna"),
+                                  stGroupName = c("Abcam", "Sysy"))
+toc()
+
+## save data for simpler re-usage
+write_rds(metap_list, "../data/p.1.4_metaplist.RDS")
+```
+
+```{r}
+## The data is preprocessed; load the prepared list; To assemble the genomic coordinates again, re-run the previous chunk
+metap_list <- read_rds("../data/p.1.4_metaplist.RDS")
+### assemble the plot
+metap_tab <- metap_list$data_tab
+# c("#592f93", "#f8a51b")
+ggobj <- ggplot(data = metap_tab, aes(x = metap_tab %>% pull(x))) +
+  geom_line(aes(y = density, 
+                color = group), 
+            alpha = 1,
+            size = 1) +
+  geom_ribbon(aes(ymin = rep(0, length(density)),
+                  ymax = density, 
+                  fill = group), 
+              alpha = 0.2) + 
+  #theme_metaprofile(aspect.ratio = 0.6, base_size = 16) + 
+  xlab("") + labs(fill = "Antibody:", color = "Antibody:") +
+  scale_color_manual(values = c("#999999", "#333333")) + 
+  scale_fill_manual(values = c("#999999", "#333333"))
+#
+pos <- Guitar:::.generate_pos_para(4)
+p.1.4 <- Guitar:::.RNAPlotStructure(p = ggobj, componentWidth = metap_list$component_width, headOrtail = TRUE, pos = pos)
+#
+ggsave(filename = "../output/p.1.4.pdf", p.1.4)
+```
+
+
+################################################################################
+## 1.5 Plots showing distribution of a DRACH motif around the peak summits inferred from m6A-RIPseqs
+```{r, fig.width=8, fig.height=5}
+# Distribution of motif relative to peak summit
+m_dist_sy <- quiet(read_tsv("../data/PeakCalls/m6a_fragmented/m6a_fragmented_IP_fr_m6a-sysy/homer_hist_200.tsv", 
+                         col_types = cols(.default = col_double()))
+                ) %>% 
+  dplyr::slice(2:(length(.[[1]]) - 1)) %>% 
+  `colnames<-`(c("bp", "motif_total", "motif_sense", "motif_antisense", paste0(c("A", "C", "G", "T"), "_freq"))) %>% 
+  dplyr::select(-contains("freq"), -motif_total) %>% 
+  gather(., contains("motif"), key = "motif", value = "value") %>% 
+  mutate(antibody = "Sysy")
+m_dist_ab <- quiet(read_tsv("../data/PeakCalls/m6a_fragmented/m6a_fragmented_IP_fr_m6a-abcam/homer_hist_200.tsv", 
+                         col_types = cols(.default = col_double()))
+                ) %>% 
+  dplyr::slice(2:(length(.[[1]]) - 1)) %>% 
+  `colnames<-`(c("bp", "motif_total", "motif_sense", "motif_antisense", paste0(c("A", "C", "G", "T"), "_freq"))) %>% 
+  dplyr::select(-contains("freq"), -motif_total) %>% 
+  gather(., contains("motif"), key = "motif", value = "value") %>% 
+  mutate(antibody = "Abcam")
+m_dist <- rbind(m_dist_sy, m_dist_ab)
+
+  
+ggplot(data = m_dist,
+       aes(x = bp, 
+           y = value, 
+           color = motif)) + 
+  geom_point(size = 2) + 
+  geom_path(size = 1) + 
+  geom_vline(xintercept = 0, linetype = "dashed") +
+  scale_color_manual(values = alpha(c(pal_msa[3], "gray60"), 0.67), 
+                     name = "Strand:", 
+                     breaks = c("motif_sense", "motif_antisense"), 
+                     labels = c("Peak strand", "Opposite strand")) +
+  labs(x = "Distance from the peak summit, bp", 
+       y = "Motif count per 5 bp, per peak") + 
+  facet_grid(. ~ antibody) +
+  theme(aspect.ratio = 1.25) -> p.1.5
+
+ggsave("../output/p.1.5.pdf", p.1.5)
+```
+
+
+################################################################################
+## 1.6 2-dimensional histogram showing the correlation between different antibodies used for total(unfragmented) m6A-RIPseqs.
+log2FC between Eluate and Flowthrough estimated using SySy antibody is plotted against lg2FC between Eluate and Flowthrough estimated using Abcam antibody. Pearson correlation between X and Y is reported on the plot.
+```{r}
+abcam_tab <- de_m6a$`soft-filt_outfilt_IP_unfr_m6a.abcam_vs_FLOW_unfr_m6a.abcam` %>% dplyr::select(gene, lgfc_abcam = log2FoldChange)
+sysy_tab <- de_m6a$`soft-filt_outfilt_IP_unfr_m6a.sysy_vs_FLOW_unfr_m6a.sysy` %>% dplyr::select(gene, lgfc_sysy = log2FoldChange)
+ab_cor <- inner_join(abcam_tab, sysy_tab, by = "gene")
+#
+ggplot(data = ab_cor, 
+       aes(x = lgfc_sysy, 
+           y = lgfc_abcam)) + 
+  geom_bin2d(binwidth = 0.25) + 
+  geom_hline(yintercept = 0, linetype = "dashed", color = "#333333") +
+  geom_vline(xintercept = 0, linetype = "dashed", color = "#333333") +
+  geom_smooth(method = "lm", se = F) +
+  ggpubr::stat_cor() + 
+  scale_fill_viridis_c() + 
+  theme_bw(base_size = 14) + 
+  lims(x = c(-10, 10), y = c(-10, 10)) +
+  labs(y = "log2FC IP vs Flow (abcam)", x = "log2FC IP vs Flow (sysy)") -> p.1.6
+
+ggsave("../output/p.1.6.pdf", p.1.6)
+```
+
+################################################################################
+## 1.7 qPCR validation of m6ARIPseq experiments.
+Pearson correlations between lg2FCs from m6A-RIPseqs (Y) and delta Ct's for candidate transcripts (X) are reported on the plot for both antibodies.
+```{r}
+f_tab <- tibble(dct_abcam = c(5.81755383365437,
+                              5.54591915031877,
+                              4.57699239733848,
+                              3.59975026782392, 
+                              2.21033725804462, 
+                              1.58741227582733, 
+                              1.55375708209785, 
+                              1.23728134509787, 
+                              1.43987527422602), 
+                      dct_sysy = c(6.78873338743332, 
+                                   5.79912705284167, 
+                                   7.44078689636392, 
+                                   7.63113116282434, 
+                                   0.776246183340399, 
+                                   2.50182008783007, 
+                                   1.21739340149005, 
+                                   0.414522585525116, 
+                                   -0.655463079309084), 
+                      meth_group = c(rep("high_methylation", 4), 
+                                     rep("low_methylation", 5)),
+                      gene_name = c("Cdr2", 
+                                    "Sh3gl1", 
+                                    "Ngfr", 
+                                    "Sacs", 
+                                    "Gapdh", 
+                                    "Actb",
+                                    "Igf2", 
+                                    "Eif5a", 
+                                    "Ndufa4"), 
+                      gene_id = c("ENSMUSG00000030878", 
+                                  "ENSMUSG00000003200", 
+                                  "ENSMUSG00000000120", 
+                                  "ENSMUSG00000048279", 
+                                  "ENSMUSG00000057666", 
+                                  "ENSMUSG00000029580", 
+                                  "ENSMUSG00000048583", 
+                                  "ENSMUSG00000078812", 
+                                  "ENSMUSG00000029632")
+                      )
+de_abcam <- de_m6a$`soft-filt_outfilt_IP_unfr_m6a.abcam_vs_FLOW_unfr_m6a.abcam` %>% 
+  mutate(gene_id = str_split_fixed(gene, "_", 2)[, 1], 
+         gene_name = str_split_fixed(gene, "_", 2)[, 2]) %>% 
+  dplyr::select(gene_id, gene_name, l2fc_abcam = log2FoldChange)
+de_sysy <- de_m6a$`soft-filt_outfilt_IP_unfr_m6a.sysy_vs_FLOW_unfr_m6a.sysy` %>% 
+  mutate(gene_id = str_split_fixed(gene, "_", 2)[, 1], 
+         gene_name = str_split_fixed(gene, "_", 2)[, 2]) %>% 
+  dplyr::select(gene_id, gene_name, l2fc_sysy = log2FoldChange)
+
+f_tab <- left_join(f_tab, de_abcam, by = c("gene_id", "gene_name")) %>% 
+  left_join(., de_sysy, by = c("gene_id", "gene_name")) #%>% 
+
+ft1 <- f_tab %>% 
+  dplyr::select(gene_name, gene_id, l2fc_abcam, l2fc_sysy) %>% 
+  gather(., contains("l2fc"), key = "ab", value = "lg2fc") %>% 
+  mutate(ab = str_remove_all(ab, "l2fc_"))
+
+f_tab <- f_tab %>% 
+  dplyr::select(gene_name, gene_id, meth_group, dct_abcam, dct_sysy) %>% 
+  gather(., contains("dct"), key = "ab", value = "dct") %>%
+  mutate(ab = str_remove_all(ab, "dct_")) %>%
+  inner_join(., ft1, by = c("gene_id", "gene_name", "ab"))
+
+ggplot(data = f_tab, 
+       aes(x = dct, 
+           y = lg2fc, 
+           shape = ab, 
+           color = ab)) + 
+  geom_point(size = 2.5) + 
+  geom_smooth(method = "lm", formula = y ~ x, se = FALSE) + 
+  ggpubr::stat_cor() + 
+  ggrepel::geom_text_repel(aes(label = gene_name), min.segment.length = 0.7, force = 100) + 
+  #scico::scale_color_scico_d(palette = "batlow") +
+  scale_color_manual(values = c("#999999", "#333333")) +
+  theme_bw(base_size = 14) + 
+  labs(y = "log2FoldChange", x = "deltaCT") -> p.1.7
+
+ggsave("../output/p.1.7.pdf", p.1.7)
+```
+
+
+
+################################################################################
+## 1.8 Validation of m6A-RIP protocol by RT-qPCR; 
+```{r, fig.width=5, fig.height=6}
+e_tab <- tibble(group = c("Input", 
+                          "Input",
+                          "Input",
+                          "Input", 
+                          "Flow_m6A", 
+                          "Flow_m6A", 
+                          "Flow_m6A", 
+                          "Flow_m6A",
+                          "Flow_m6A", 
+                          "Flow_m6A", 
+                          "IP_m6A", 
+                          "IP_m6A", 
+                          "IP_m6A", 
+                          "IP_m6A",
+                          "IP_m6A", 
+                          "IP_m6A"), 
+                rep = c(1, 2, 1, 2, 
+                        1, 2, 1, 2,
+                        1, 2, 
+                        1, 2, 1, 2,
+                        1, 2),
+                rluc_group = c("m6A Rluc",
+                               "m6A Rluc", 
+                               "Rluc",
+                               "Rluc", 
+                               "m6A Rluc",
+                               "m6A Rluc", 
+                               "Rluc",
+                               "Rluc",  
+                               "m6A Rluc (beads only)", 
+                               "m6A Rluc (beads only)",
+                               "m6A Rluc",
+                               "m6A Rluc", 
+                               "Rluc",
+                               "Rluc",  
+                               "m6A Rluc (beads only)", 
+                               "m6A Rluc (beads only)"),
+                rluc_value = c(104.36, 
+                               95.64,
+                               95.33,
+                               97.23,
+                               1.20,
+                               1.28,
+                               69.00,
+                               101.57, 
+                               101.57,
+                               94.99,
+                               35.94,
+                               40.41,
+                               0.79,
+                               1.25,
+                               0.05,
+                               0.04)
+                ) %>% 
+  mutate(group = factor(group, levels = c("Input", 
+                                          "Flow_m6A",
+                                          "Flow_beads", 
+                                          "IP_m6A", 
+                                          "IP_beads"))) %>% 
+  group_by(group, rluc_group) %>%
+  summarise(rluc_mean = mean(rluc_value), 
+            S = var(rluc_value), 
+            stddev = sd(rluc_value),
+            stderr = qnorm(0.975) * (stddev / sqrt(n()))
+            )
+
+#
+ggplot(data = e_tab,
+       aes(x = group,
+           y = rluc_mean, 
+           fill = rluc_group
+           )
+       ) + 
+  geom_col(width = 0.8, 
+           alpha = 0.67,
+           position = position_dodge(width = 0.9), 
+           color = "#333333"
+           ) + 
+  geom_errorbar(aes(ymin = rluc_mean - stddev, 
+                    ymax = rluc_mean + stddev),
+                position = position_dodge(width=0.9), 
+                width = 0.25) +
+  theme(aspect.ratio = 2) +
+  scale_y_continuous(name = "% of transcript compared to input", 
+                     breaks = c(0, 25, 50, 75, 100, 125)
+                     ) +
+  labs(x = "") + 
+  #scico::scale_colour_scico_d(palette = "lajolla") +
+  scale_fill_manual(values = c("#d64ecf","#333333", "#009cb8")) -> p.1.8
+
+ggsave("../output/p.1.8.pdf", p.1.8)
+```
+
+################################################################################
+## 1.9 Scatter plot showing the difference between Neuritic and Somatic half-lives of m6A-enriched and m6A-depleted transcripts
+```{r}
+data_loc.Ascl1Slam <- read_tsv("../data/Ascl1.Compartments_Slamseq/soft-filt_outfilt_N_0_vs_S_0_deseq_res.tsv")
+read_tsv("../data/hard-filt_outfilt_IP_unfr_m6a.sysy_vs_FLOW_unfr_m6a.sysy_deseq_res.tsv", 
+         show_col_types = F) %>% 
+  mutate(gene_id = str_split_fixed(gene, "_", 2)[, 1],
+         gene_name = str_split_fixed(gene, "_", 2)[, 2]) %>% 
+  dplyr::select(-gene) -> res_msa.sysy
+##
+t.hl_comp.1 <- read_tsv("../data/Ascl1.Compartments_Slamseq/data_hl.tsv")
+t.hl_comp.1 %>% 
+  pivot_wider(., 
+              names_from = "Group",
+              values_from = c("Half_life", "HL_LoInt95", "HL_UpInt95"), 
+              names_glue = "{Group}_{.value}") -> t.hl_scat
+t.hl_scat.filt <- t.hl_scat %>% 
+  filter((Soma_HL_LoInt95 - Soma_HL_LoInt95) < Soma_Half_life,
+         (Neurites_HL_UpInt95 - Neurites_HL_LoInt95) < Neurites_Half_life)
+
+res_msa.sysy %>% 
+  mutate(sign_msa = case_when(
+           log2FoldChange > 1 & padj < 0.05 ~ "m6A-enriched",
+           log2FoldChange < -1 & padj < 0.05 ~ "m6A-depleted",
+           T ~ "NS"
+         )) %>% 
+  dplyr::select(gene_id, gene_name, sign_msa) %>% 
+  inner_join(data_loc.Ascl1Slam %>% 
+               mutate(gene_id = str_split_fixed(gene, "_", 2)[, 1],
+                      gene_name = str_split_fixed(gene, "_", 2)[, 2]) %>% 
+               dplyr::select(-gene), 
+             ., 
+             by = c("gene_id", "gene_name")) %>% 
+  mutate(sign_loc = case_when(
+           log2FoldChange > log2(1.5) & padj < 0.05 ~ "Neurite",
+           log2FoldChange < -log2(1.5) & padj < 0.05 ~ "Soma",
+           T ~ "NS"
+         )) %>% 
+  dplyr::select(contains("gene"), contains("sign"), everything()) %>% 
+  inner_join(t.hl_scat.filt %>% mutate(delta_hl = Neurites_Half_life - Soma_Half_life), 
+             ., 
+             by = c("gene_id", "gene_name")) -> plchld
+  
+plchld %>% 
+  filter(sign_loc != "NS",
+         sign_msa != "NS") %>% 
+  ggplot(data = ., aes(x = Soma_Half_life, y = Neurites_Half_life)) + 
+  geom_point(alpha = 0.3, aes(color = sign_msa)) +
+  geom_abline(intercept = 0, slope = 1) +
+  scale_color_manual(values = pal_msa) +
+  scale_x_continuous(breaks = seq(0, 16, by = 4), limits = c(0, 16)) +
+  scale_y_continuous(breaks = seq(0, 16, by = 4), limits = c(0, 16)) +
+  facet_grid(. ~ sign_loc) +
+  theme(aspect.ratio = 1) -> p.1.9
+
+
+ggsave("../output/p.1.9.pdf", p.1.9)
+```
+
+```{r}
+plchld %>% 
+  filter(sign_loc != "NS",
+         sign_msa != "NS") %>% 
+  group_by(sign_loc) %>% 
+  nest() %>% 
+  mutate(test = "Wilcoxon",
+         p.value = purrr::map_dbl(data,
+                                  ~ wilcox.test(formula = delta_hl ~ sign_msa, data = .x)$p.value)
+         ) %>% 
+  ungroup() %>% 
+  dplyr::select(-data) %>% 
+  mutate(p.adj = p.adjust(p.value)) %>% 
+  write_tsv(., "../output/p.1.9_stats.tsv")
+```
+
+
+
+########################################################  
+#   2. Plots related to Figure 1
+################################################################################
+## 2.1 Density plots showing the distributions of Half-lives in subcellular compartments
+```{r}
+l.hl.comps <- read_rds("../data/CompsHLs_list.RDS")
+rbind(
+  l.hl.comps$PCN.3c %>%
+    dplyr::select(-contains("95")) %>%
+    mutate(gene_id = str_split_fixed(gene, "_", 2)[, 1],
+           gene_name = str_split_fixed(gene, "_", 2)[, 2],,
+           group = case_when(
+             group == "Pro" ~ "Neurite, PCN",
+             group == "Nuc" ~ "Nucleus, PCN",
+             group == "Cyto" ~ "Soma, PCN",
+             T ~ "ayy"
+           )) %>%
+    dplyr::select(gene_id, gene_name, group, Half_life),
+  l.hl.comps$Ascl1.2c %>%
+    dplyr::select(-contains("95")) %>%
+    mutate(group = case_when(
+             Compartment == "Neurites" ~ "Neurite, mESC",
+             Compartment == "Soma" ~ "Soma, mESC",
+             T ~ "ayy"
+           )) %>% 
+    filter(Half_life != 16) %>% 
+    dplyr::select(gene_id, gene_name, group, Half_life)
+) %>% mutate(group = factor(group, 
+                            levels = c("Soma, mESC", "Neurite, mESC", "Nucleus, PCN", "Soma, PCN", "Neurite, PCN")
+                            )
+             ) -> tmp.ridges
+
+ggplot(data = tmp.ridges, aes(y = group, x = Half_life, fill = group)) + 
+  geom_density_ridges(
+    scale = .95, rel_min_height = .01
+  ) +
+  scale_fill_manual(name = "Compartment", 
+                    values = alpha(unname(c(pal_loc.2way, pal_loc.3way)[c(3, 1, 7, 5, 4)]), 0.67)) + 
+  scale_x_continuous(breaks = seq(0, 16, by = 4), limits = c(0, 16)) +
+  labs(y = "", x = "mRNA Half-life, hours") +
+  theme_bw(base_size = 14) -> p.2.1
+
+ggsave("../output/p.2.1.pdf")
+
+## statistical test
+TukeyHSD(aov(formula = Half_life ~ group, data = p.2.1$data))$group %>% 
+  as_tibble(., 
+            rownames = "comparison") %>% 
+            mutate(test = "Tukey post-hoc test for difference in means",
+                   group = "", 
+                   variable = "",
+                   value = "Half-life",
+                   `p-value` = "") %>% 
+  dplyr::select(group, variable, value, comparison, test, `p-value`, `p-adjusted` = `p adj`) %>% 
+  mutate(sign.symb = case_when(
+           `p-adjusted` < 0.001 ~ "***",
+           `p-adjusted` < 0.01 ~ "**",
+           `p-adjusted` < 0.05 ~ "*",
+           T ~ "NS"
+         )) -> p.2.1_stats
+write_tsv(p.2.1_stats, 
+          "../output/p.2.1_stats.tsv")
+```
+
+
+################################################################################
+## 2.2 Probabilistic grid showing the chance of an mRNA with an average Half-life within a given compartment to reach neuritic distance X.
+```{r}
+res_phen.long_3c <- read_rds("../data/PCN.ThreeWay_dnCaf1.CompSep/DEres.3c_Phen.Long.RDS") %>% 
+  mutate(comp_1 = str_split_fixed(comp, "_", 2)[, 1],
+         comp = str_remove_all(comp, "Pro_|Cyto_|Nuc_"))
+res_comp.long_3c <- read_rds("../data/PCN.ThreeWay_dnCaf1.CompSep/DEres.3c_Comp.Long.RDS") %>% 
+  inner_join(mm10Ann, ., by = c("gene_name")) %>% 
+  filter(str_count(comp, "GFP") == 2 | str_count(comp, "GFP") == 0) %>% 
+  mutate(
+    comp_1 = str_split_fixed(comp, "_", 3)[, 3],
+    comp = str_remove_all(comp, "_GFP|_dnCaf1")
+    )
+
+l.hl.comps$PCN.3c %>% 
+               mutate(sign = case_when(
+                        group == "Nuc" ~ "Nucleus",
+                        group == "Cyto" ~ "Cytoplasm",
+                        group == "Pro" ~ "Projections",
+                        T ~ "ayy"
+                      ),
+                      gene_id = str_split_fixed(gene, "_", 2)[, 1],
+                      gene_name = str_split_fixed(gene, "_", 2)[, 2])  %>% 
+  inner_join(.,
+             rbind(
+               res_comp.long_3c %>% 
+                 filter(comp_1 == "GFP", comp == "Pro.vs.Cyto", sign != "NS") %>% 
+                 dplyr::select(gene_name, sign),
+               res_comp.long_3c %>% 
+                 filter(comp_1 == "GFP", comp == "Cyto.vs.Nuc", sign == "Nucleus") %>% 
+                 dplyr::select(gene_name, sign)
+             ),
+             by = c("gene_name", "sign")) -> tab.3c 
+tab.3c %>% 
+  group_by(sign) %>% 
+  summarise(n = n(),
+            mean = mean(Half_life),
+            median = median(Half_life), .groups = "drop") -> stat.3c
+
+read_tsv("../data/Zappulo_2017/Zappulo_soft-filt_Proc_vs_Soma_deseq_res.tsv",
+         show_col_types = F) %>% 
+  mutate(gene_id = str_split_fixed(gene, "_", 2)[, 1],
+         gene_name = str_split_fixed(gene, "_", 2)[, 2],
+         sign = case_when(
+    log2FoldChange > 0.58 & padj < 0.05 ~ "Neurites",
+    log2FoldChange < -0.58 & padj < 0.05 ~ "Soma",
+    T ~ "NS"
+  )) %>% 
+  dplyr::select(gene_id, gene_name, sign) %>% 
+  inner_join(., l.hl.comps$Ascl1.2c, by = c("gene_id", "gene_name", "sign" = "Compartment")) -> tab.2c 
+tab.2c %>% 
+  group_by(sign) %>% 
+  summarise(n = n(),
+            mean = mean(Half_life),
+            median = median(Half_life), .groups = "drop") -> stat.2c
+stat.loc <- rbind(stat.2c, stat.3c)
+##
+stat.loc %>% 
+  dplyr::rename(localization = sign, n_genes = n, 
+                `mean Half-life, hours` = mean,
+                `median Half-life, hours` = median) %>% 
+  write_tsv(., "../output/p.2.2_summary.tsv")
+```
+
+
+```{r}
+dendprob_bg <- purrr::map2(1:100, 
+                              seq(0.1, 16, length.out = 100), 
+            ~ list(name = .x, 
+                   tr_hl = .y, 
+                   nbins = 100, 
+                   ddist = 500, 
+                   DR = 3.0 * 10^(-3), 
+                   uR = 5.8 * 10^(-3), 
+                   betaR = 0.0109) %>% 
+              rdd()
+            ) %>% 
+  purrr::reduce(., rbind)
+
+ggplot(data = dendprob_bg, aes(x = dend_dist, y = rna_hl)) + 
+  geom_raster(aes(fill = rna_pdens)) + 
+  geom_hline(data = stat.loc %>% mutate(Localization = factor(sign,
+                                                              levels = c("Neurite",
+                                                                         "Soma",
+                                                                         "Projections",
+                                                                         "Cytoplasm",
+                                                                         "Nucleus"))), 
+             aes(yintercept = mean, 
+                 color = Localization)) +
+  scico::scale_fill_scico(palette = "lajolla", begin = 0, name = "Probability:") +
+  scale_color_manual(values = c(pal_loc.2way, pal_loc.3way)[c(1, 3:5, 7)]) +
+  scale_y_continuous(breaks = seq(0, 16, by = 4)) +
+  labs(y = "mRNA half-life, hours", x = "Neurite distance, mm") +
+  theme(aspect.ratio = 1, 
+        panel.grid = element_blank(), 
+        panel.border = element_blank(), 
+        axis.line = element_line(size = 0.25),
+        axis.ticks = element_line(size = 0.25)) -> p.2.2
+
+ggsave(p.2.2, filename = "../output/p.2.2.pdf", width = 4.5, height = 4.5)
+```
+
+
+################################################################################
+## 2.3 Probability to venture further than 100 micrometers of Neuritically & Somatically localized transcripts from 3c PCN data.
+```{r}
+tab.3c %>% 
+  filter(sign != "Nucleus") %>% 
+  dplyr::select(gene_name, Half_life, sign) %>% 
+  split(., .$sign) %>% 
+  purrr::map2_dfr(.,
+                  names(.),
+                  ~ purrr::map2_dfr(.x$gene_name,
+                                    .x$Half_life,
+                                    function(gene, hl) {
+                                      list(name = gene, 
+                                           tr_hl = hl, 
+                                           nbins = 5, 
+                                           ddist = 100, 
+                                           DR = 3.0 * 10^(-3), 
+                                           uR = 5.8 * 10^(-3), 
+                                           betaR = 0.0109) %>% 
+                                      rdd()
+                                    }) %>% mutate(sign = .y)
+                  ) -> t.p_1fd
+
+ggplot(data = t.p_1fd %>% filter(dend_dist == 100), 
+       aes(x = rna_pdens)) +
+  geom_histogram(aes(fill = sign),
+                 color = "black", 
+                 size = 0.1, 
+                 bins = 18, position = "identity") + 
+  geom_vline(xintercept = 0.5, color = "red", size = 0.5) +
+  scale_fill_manual(values = alpha(pal_loc.3way[1:2], 0.67)) + 
+  coord_cartesian(xlim = c(0, 1)) +
+  theme(aspect.ratio = 1) +
+  labs(y = "Frequency",
+       x = "Probability to reach >= 100 microm", 
+       fill = "Localization") -> p.2.3
+
+ggsave(p.2.3, filename = "../output/p.2.3.pdf", width = 4.5, height = 3.5)
+```
+
+
+########################################################  
+#   3. Figure 4 plots
+################################################################################
+## 3.1 Histograms showing the distributions of m6A-enriched & m6A-depleted transcripts along lg2FC between subcellular compartments
+RNA-sequencing data from both 3- and 2- way compartment separation were used.
+```{r}
+read_tsv("../data/hard-filt_outfilt_IP_unfr_m6a.sysy_vs_FLOW_unfr_m6a.sysy_deseq_res.tsv", 
+         show_col_types = F) %>% 
+  mutate(gene_id = str_split_fixed(gene, "_", 2)[, 1],
+         gene_name = str_split_fixed(gene, "_", 2)[, 2]) %>% 
+  dplyr::select(-gene) -> res_msa.sysy
+## filter by lfcSE
+res_msa.sysy <- res_msa.sysy %>% 
+  filter(lfcSE < quantile(res_msa.sysy$lfcSE, 0.9))
+
+
+### Load 3c data from PCN
+loc.3c <- read_rds("../data/PCN.ThreeWay_dnCaf1.CompSep/DEres.3c_Comp.Wide.RDS")
+loc.3c <- loc.3c %>%
+filter(comp == "Cyto.vs.Pro",
+         lfcSE_GFP < quantile(loc.3c$lfcSE_GFP, 0.9))
+
+### Load 2c data from mESC
+loc.mesc <- read_tsv("../data/Zappulo_2017/Zappulo_soft-filt_Proc_vs_Soma_deseq_res.tsv",
+                     show_col_types = F)
+loc.mesc <- loc.mesc %>%
+  filter(lfcSE < quantile(loc.mesc$lfcSE, 0.9)) %>% 
+  mutate(gene_id = str_split_fixed(gene, "_", 2)[, 1],
+         gene_name = str_split_fixed(gene, "_", 2)[, 2]) %>% 
+  dplyr::select(-gene) %>% 
+  dplyr::select(contains("gene_"), everything())
+
+##### Assemble the plot for 3c
+res_msa.sysy %>% 
+  mutate(
+    msa_var = case_when(
+      log2FoldChange > 1 & padj < 0.05 ~ "m6A-enriched",
+      log2FoldChange < -1 & padj < 0.05 ~ "m6A-depleted",
+      T ~ "NS"
+    )
+  ) %>% 
+  filter(msa_var != "NS") %>% 
+  dplyr::select(contains("gene_"), msa_var) %>% 
+  inner_join(.,
+             loc.3c,
+             by = c("gene_name")) -> t_p.3.1.3c
+
+ggplot(data = t_p.3.1.3c, aes(x = log2FoldChange_GFP)) + 
+  geom_histogram(aes(fill = msa_var),
+                 position = "identity", 
+                 bins = 50,
+                 color = "black", 
+                 size = 0.25,
+                 alpha = 0.5) +
+  geom_vline(xintercept = 0, color = "red") +
+  scale_fill_manual(values = pal_msa[c(1,3)]) +
+  labs(x = "", y = "Frequency", fill = "m6A status") -> p.3.1_3c
+
+
+tibble(
+  group = "localisation 3c",
+  comparison = "m6A-enriched.vs.m6A-depleted",
+  test = "Welch's two sample t-test",
+  `p-value` = t.test(formula = log2FoldChange_GFP ~ msa_var, data = t_p.3.1.3c)$p.value,
+) %>% 
+  mutate(`p-adjusted` = p.adjust(`p-value`, method = "fdr"),
+         sign.symb = case_when(
+            `p-adjusted` < 0.001 ~ "***",
+            `p-adjusted` < 0.01 ~ "**",
+            `p-adjusted` < 0.05 ~ "*",
+            T ~ "NS"
+            )
+         ) -> p.3.1.3c_stats
+write_tsv(p.3.1.3c_stats, "../output/p.3.1.3c_stats.tsv")
+ggsave(plot = p.3.1_3c, filename = "../output/p.3.1.3c.pdf", width = 6, height = 4)
+
+##### Assemble the plot for 2c
+res_msa.sysy %>% 
+  mutate(
+    msa_var = case_when(
+      log2FoldChange > 1 & padj < 0.05 ~ "m6A-enriched",
+      log2FoldChange < -1 & padj < 0.05 ~ "m6A-depleted",
+      T ~ "NS"
+    )
+  ) %>% 
+  filter(msa_var != "NS") %>% 
+  dplyr::select(contains("gene_"), msa_var) %>% 
+  inner_join(.,
+             loc.mesc,
+             by = c("gene_id", "gene_name")) -> t_p.3.1.2c
+
+ggplot(data = t_p.3.1.2c, aes(x = log2FoldChange)) + 
+  geom_histogram(aes(fill = msa_var),
+                 position = "identity", 
+                 bins = 50,
+                 color = "black", 
+                 size = 0.25,
+                 alpha = 0.5) +
+  geom_vline(xintercept = 0, color = "red") +
+  scale_fill_manual(values = pal_msa[c(1,3)]) +
+  scale_x_continuous(breaks = seq(-6, 6, by = 2)) +
+  labs(x = "", y = "Frequency", fill = "m6A status") -> p.3.1.2c
+
+
+tibble(
+  group = "localisation 2c (mESC)",
+  comparison = "m6A-enriched.vs.m6A-depleted",
+  test = "Welch's two sample t-test",
+  `p-value` = t.test(formula = log2FoldChange ~ msa_var, data = t_p.3.1.2c)$p.value,
+) %>% 
+  mutate(`p-adjusted` = p.adjust(`p-value`, method = "fdr"),
+         sign.symb = case_when(
+            `p-adjusted` < 0.001 ~ "***",
+            `p-adjusted` < 0.01 ~ "**",
+            `p-adjusted` < 0.05 ~ "*",
+            T ~ "NS"
+            )
+         ) -> p.3.1.2c_stats
+write_tsv(p.3.1.2c_stats, "../output/p.3.1.2c_stats.tsv")
+ggsave(plot = p.3.1.2c, filename = "../output/p.3.1.2c.pdf", width = 6, height = 4)
+```
+
+################################################################################
+## 3.2 Box-plots showing change in expression and localisation of m6A-enriched/-depleted transcripts in shYTHDF and shMETTL3 KD
+```{r}
+read_rds("../data/PCN.TwoWay_shYthdf123/DEres.2c_Phen.Long.RDS") -> res_phen.shyth
+read_rds("../data/PCN.TwoWay_shMettl3/DEres.2c_Phen.Long.RDS") -> res_phen.shmet
+msa_tab.cons <- read_tsv("/local/artem/Projects/Stability/Results/MultipleDatasetsConsensus/consensus_msa_tab.tsv", 
+                    show_col_types = F)
+
+list(
+  res_phen.shyth,
+  res_phen.shmet
+) %>% 
+  purrr::map_dfr(.,
+                 ~ .x %>% mutate(comp_1 = str_split_fixed(comp, "_", 2)[, 1],
+                                 comp = str_remove_all(comp, "Neurite_|Soma_"),
+                                 comp = str_remove_all(comp, ".vs.Scrambled")) %>% 
+                   inner_join(msa_tab.cons[msa_tab.cons$dataset_msa == "consensus", ], .,
+                              by = c("gene_id" = "gene_name"))
+                 ) %>% 
+  mutate(msa_var = factor(msa_var, levels = c("m6A depleted", "Not significant", "m6A enriched"))) -> t_p.3.2.Dexp
+
+t_p.3.2.Dexp %>% 
+  group_by(gene_id, msa_var, comp) %>% 
+  summarise(log2FoldChange = mean(log2FoldChange), .groups = "drop") %>% 
+ggplot(data = .,
+       aes(x = comp, y = log2FoldChange)) + 
+  geom_boxplot(aes(fill = msa_var), outlier.shape = NA, size = 0.25) + 
+  geom_hline(yintercept = 0) +
+  scale_fill_manual(values = alpha(pal_msa, 0.67), name = "m6A") +
+  #facet_grid(. ~ comp_1) + 
+  coord_cartesian(ylim = c(-2, 2)) + 
+  theme(aspect.ratio = 2) -> p.3.2.Dexp
+
+ggsave("../output/p.3.2.Dexp.pdf", p.3.2.Dexp)
+
+t_p.3.2.Dexp %>% 
+  group_by(gene_id, msa_var, comp) %>% 
+  summarise(log2FoldChange = mean(log2FoldChange), .groups = "drop") %>% 
+  filter(msa_var != "Not significant") %>% 
+  group_by(comp) %>% 
+  nest() %>% 
+  mutate(test = "Welch's two sample t-test",
+         comparison = "Upregulation.vs.m6A-enrichment",
+         `p-value` = purrr::map(data, ~ t.test(formula = log2FoldChange ~ msa_var, data = .x)$p.value)) %>% 
+  unnest(`p-value`) %>% 
+  ungroup() %>% 
+  mutate(`p-adjusted` = p.adjust(`p-value`, method = "fdr"),
+         sign.symb = case_when(
+            `p-adjusted` < 0.001 ~ "***",
+            `p-adjusted` < 0.01 ~ "**",
+            `p-adjusted` < 0.05 ~ "*",
+            T ~ "NS"
+            )
+         ) %>% 
+  dplyr::select(group = comp, test, comparison, `p-value`, `p-adjusted`, sign.symb) -> p.3.2.Dexp_stats
+write_tsv(p.3.2.Dexp_stats, "../output/p.3.2.Dexp_stats.tsv")
+```
+
+
+
+```{r}
+# read_rds("../data/PCN.TwoWay_shYthdf123/DEres.2c_Comp.Wide.RDS") %>% 
+#   mutate(delta_loc = log2FoldChange_shYTHDF123 - log2FoldChange_Scrambled,
+#          comp_1 = "shYTHDF123") -> res_comp.shyth
+# 
+# read_rds("../data/PCN.TwoWay_shMettl3/DEres.2c_Comp.Wide.RDS") %>% 
+#   mutate(delta_loc = log2FoldChange_shMettl3 - log2FoldChange_Scrambled,
+#          comp_1 = "shMettl3") -> res_comp.shmet
+# 
+# 
+# list(
+#   res_comp.shyth %>% dplyr::select(gene_id = gene_name, delta_loc, comp_1),
+#   res_comp.shmet %>% dplyr::select(gene_id = gene_name, delta_loc, comp_1)
+# ) %>% 
+#   purrr::map_dfr(.,
+#                  ~ .x %>% 
+#                    inner_join(msa_tab.cons[msa_tab.cons$dataset_msa == "consensus", ], .,
+#                               by = c("gene_id"))
+#                  ) %>% 
+#   mutate(msa_var = factor(msa_var, levels = c("m6A depleted", "Not significant", "m6A enriched"))) -> t_p.f5h
+```
+
+
+
+################################################################################
+## 3.3 Box-plots showing expression and change in localisation of selected GO-terms in shYTHDF PCNs
+```{r}
+read_rds("../data/PCN.TwoWay_shYthdf123/DEres.2c_Comp.Wide.RDS") %>% 
+  inner_join(mm10Ann, ., by = c("gene_id" = "gene_name")) %>% 
+  mutate(delta_loc = log2FoldChange_shYTHDF123 - log2FoldChange_Scrambled,
+         comp_1 = "shYTHDF123") -> res_comp
+# Load in DGEs from shYTHDF run
+read_rds("../data/PCN.TwoWay_shYthdf123/DEres.2c_Phen.Long.RDS") %>% 
+  inner_join(mm10Ann, ., by = c("gene_id" = "gene_name")) -> res_phen
+dds <- read_rds("../data/PCN.TwoWay_shYthdf123/DDS.2c.RDS")
+normTransform(dds) %>% 
+  assay() %>% 
+  as_tibble(., rownames = "gene_id") %>% 
+  pivot_longer(., !contains("gene"), names_to = "group", values_to = "cts.norm") %>% 
+  mutate(comp = str_split_fixed(group, "_", 3)[, 2],
+         group = str_split_fixed(group, "_", 3)[, 1]) %>% 
+  group_by(gene_id, group, comp) %>% 
+  summarise(cts.avg = mean(cts.norm), .groups = "drop") %>% 
+  inner_join(mm10Ann, ., by = "gene_id") -> cts
+
+res_phen %>% 
+  filter(lfcSE < quantile(res_phen$lfcSE, 0.75),
+         sign != "NS") %>% 
+  mutate(comp_1 = str_split_fixed(comp, "_", 2)[, 1]) -> res_phen.tmp
+
+up.shyth <- res_phen.tmp %>% 
+  filter(sign == "shYTHDF123") %>% 
+  split(., .$comp_1) %>% 
+  purrr::map(., ~ .x %>% pull(gene_name)) %>% 
+  purrr::reduce(., intersect)
+up.shyth_n <- res_phen.tmp %>% 
+  filter(sign == "shYTHDF123", comp_1 == "Neurite") %>% 
+  pull(gene_name)
+
+
+# Prepare a GO annotation file
+mgi <- read_tsv("../data/auxiliary/gene_association.mgi", skip = 3, col_names = F)
+mgi.ann <- read_tsv("../data/auxiliary/go_terms.mgi", skip = 3, col_names = F)
+## prepare separate gene annotation file
+mgi %>% 
+  dplyr::select(X3, X12, X10) %>% 
+  distinct(X3, X10, .keep_all = T) %>% 
+  `colnames<-`(c("gene_name", "gene_biotype", "info")) %>% 
+  distinct(gene_name, .keep_all = T) -> gene.ann
+
+## we actually can drop categorical terms to clean up a lot of space
+mgi %>% 
+  filter(!str_detect(X4, "NOT")) %>% 
+  dplyr::select(gene_name = X3, GO.term = X5) %>% 
+  inner_join(., 
+             mgi.ann %>% dplyr::select(GO.term = X2, GO.term_category = X1, GO.term_name = X3),
+             by = "GO.term") %>% 
+  filter(!GO.term_name %in% c("molecular_function", "biological_process", "cellular_component")) %>% 
+  distinct(gene_name, GO.term, GO.term_category, GO.term_name) -> go2gene.ann
+  
+## Append additional terms that were absent in the inital table from MGI
+suppGO.n2n <- read_tsv("../data/PCN.TwoWay_shYthdf123/GO_term_summary_n2n.txt",
+                       show_col_types = F) %>% 
+  distinct(Symbol, .keep_all = T) %>% 
+  mutate(GO.term = "GO:0098984",
+         GO.term_category = "Cellular Component",
+         GO.term_name = "neuron to neuron synapse") %>% 
+  dplyr::select(gene_name = Symbol, contains("GO.term"))
+suppGO.mit <- read_tsv("../data/PCN.TwoWay_shYthdf123/GO_term_summary_mito.txt", 
+                       show_col_types = F) %>% 
+  distinct(Symbol, .keep_all = T) %>% 
+  mutate(GO.term = "GO:0098798",
+         GO.term_category = "Cellular Component",
+         GO.term_name = "mitochondrial protein−containing complex") %>% 
+  dplyr::select(gene_name = Symbol, contains("GO.term"))
+##
+go2gene.ann <- list(go2gene.ann, suppGO.n2n, suppGO.mit) %>% purrr::reduce(., rbind)
+
+
+## Load canonical terms related to stable and localized transcripts identified in PCNs before
+gost.stloc <- read_tsv("../data/GO_terms.clpsd.tsv",
+                        show_col_types = F)
+t_gos.stloc <- go2gene.ann %>% 
+  filter(GO.term %in% gost.stloc$term_id)
+
+#### Assemble the plot
+t_gos.stloc_upn <- t_gos.stloc %>% 
+  filter(gene_name %in% up.shyth_n)
+## Keep only terms with > 15 genes
+t_gos.stloc_upn %>% 
+  tabyl(GO.term_name) %>% 
+  as_tibble() %>% 
+  filter(n > 15) %>% 
+  pull(GO.term_name) -> gos.tokeep.n
+
+
+## Gene expression plot
+t_gos.stloc_upn %>% 
+  inner_join(cts, ., by = c("gene_name")) %>% 
+  filter(GO.term_name %in% gos.tokeep.n,
+         comp == "Neurite") %>% 
+  ggplot(data = ., aes(x = cts.avg, y = str_wrap(GO.term_name, 42))) + 
+  geom_boxplot(aes(fill = group), size = 0.25, outlier.size = 0.5, outlier.alpha = 0.3) + 
+  #geom_vline(xintercept = cts_summary %>% filter(str_detect(dummy, "Neurite")) %>% pull(cts.mean), size = 0.5) +
+  scale_fill_manual(values = alpha(pal_mut.msa[c(1, 3)], 0.67)) +
+  theme(aspect.ratio = 0.75, legend.position = "bottom") + 
+  labs(x = "log2(CPM + 1)", y = "GO term", fill = "") -> p_stLocGOs.shYthdf123UpN_GExpr
+
+t_gos.stloc_upn %>% 
+  inner_join(res_comp, ., by = c("gene_name")) %>% 
+  filter(GO.term_name %in% gos.tokeep.n) %>% 
+  filter(log2FoldChange_shYTHDF123 < quantile(res_comp$log2FoldChange_shYTHDF123, 0.75),
+         log2FoldChange_Scrambled < quantile(res_comp$log2FoldChange_Scrambled, 0.75)) %>% 
+  mutate(delta_loc = log2FoldChange_shYTHDF123 - log2FoldChange_Scrambled) %>% 
+  ggplot(data = ., aes(x = delta_loc, y = GO.term_name)) + 
+  geom_boxplot(size = 0.25, outlier.size = 0.5, outlier.alpha = 0.3) + 
+  geom_vline(xintercept = 0, size = 0.5) +
+  theme(aspect.ratio = 0.35) + 
+  labs(x = "delta lg2FC Neurite vs Soma;\nshYthdf123 - Scrambled",
+       y = "GO term") -> p_stLocGOs.shYthdf123UpN_deltaLoc
+list(
+  p_stLocGOs.shYthdf123UpN_GExpr,
+  p_stLocGOs.shYthdf123UpN_deltaLoc
+) %>% purrr::map2(.,
+                  c("../output/p.3.3.shYthdf123UpN_GExpr",
+                    "../output/p.3.3.shYthdf123UpN_deltaLoc"),
+                   function(x, xname) {
+                     ggsave(plot = x, filename = paste0("../output/", xname, ".pdf"),
+                            width = 7, height = 4.5, device = "pdf")
+                   })
+```
+
+
+################################################################################
+## 3.4 Analysis of electrophysiological data from shYTHDF PCNs
+```{r}
+t_spikes <- read_tsv("../data/PCN.TwoWay_shYthdf123/t_spikes_yth.tsv", show_col_types = F)
+
+## filter inactive wells cells in D3 and D2 die at day 21, only residual activity at day 25
+t.yth <- t_spikes %>% 
+  filter(!(Well %in% c("D3", "D2") & DIV == "25"),
+         Treatment %in% c("Scrambled", "ShYTFD"), 
+         !Well %in% c("D5"))
+
+## summarise per DIV for line plotting
+t.yth_sum <- t.yth %>%  
+  group_by(Treatment, DIV) %>% 
+  summarise(MFR_br.avg = mean(MFR, na.rm = T),
+            MFR_br.sd = sd(MFR, na.rm = T),
+            .groups = "drop") %>% 
+  mutate(DIV = as.numeric(DIV))
+
+#### Assemble the plot
+update_geom_defaults("point", list(colour = NULL))
+ggplot(data = t.yth %>% 
+         mutate(DIV = factor(DIV, levels = c(7, 11, 14, 18, 21, 25))), 
+       aes(x = DIV, y = MFR)) + 
+  geom_boxplot(aes(fill = Treatment), size = 0.25, outlier.shape = 21) + 
+  scale_fill_manual(values = alpha(pal_mut.msa[c(1,3)], 0.67)) + 
+  theme(aspect.ratio = 1.25) + 
+  labs(y = "MFR (Hz / nAE)") -> p.mfr_boxes
+## revert to default options for durther plotting
+update_geom_defaults("point", list(colour = "black"))
+
+ggsave(filename = "../output/p.3.4.pdf", p.mfr_boxes)
+
+
+### Raster snap shot of activity
+l.div_mhz <- read_rds("../data/PCN.TwoWay_shYthdf123/l.assembled_yth.RDS")
+t.meta <- read_tsv("../data/PCN.TwoWay_shYthdf123/t_meta.tsv", show_col_types = F)
+## I will look specifically at DIV18 as it has the largest differences in spike features
+div18_mhz <- l.div_mhz$`18`
+## Only keep wells that are relevant to the analysis
+div18_mhz <- div18_mhz[t.yth[t.yth$DIV == "18", ]$Well]
+
+purrr::map2_dfr(div18_mhz,
+            names(div18_mhz),
+            function(fr_list, well) {
+              fr_list$firing_rates$frate %>% 
+                as_tibble(., rownames = "bin") %>% 
+                pivot_longer(., !contains("bin"), names_to = "Electrode", values_to = "spikes") %>% 
+                mutate(Well = well) %>% 
+                dplyr::select(Well, Electrode, bin, spikes)
+            }) %>% 
+  inner_join(t.meta, ., by = "Well") -> t.raster_mhz
+
+#### Visualise
+t.raster_mhz_sniped <- t.raster_mhz %>% 
+  filter(Well %in% c("D2", "B4")) %>% 
+  mutate(bin = factor(bin, levels = 0:9999))
+
+
+ggplot(data = t.raster_mhz_sniped, 
+       aes(y = Electrode, x = bin)) + 
+  geom_raster(aes(fill = spikes), interpolate = F) +
+  #geom_vline(xintercept = c(200, 280)) +
+  #facet_grid(Treatment + Well ~ ., scales = "free") + 
+  facet_wrap(Treatment ~ .,
+             scales = "free_y",
+             nrow = 2,
+             strip.position = "left",
+             labeller = as_labeller(c(Scrambled = "Scrambled\nElectrodes",
+                                      ShYTFD = "shYthdf123\nElectrodes")))  +
+  scale_fill_gradient2(low = "white", high = "black") + 
+  scale_x_discrete(breaks = seq(0, 10000, by = 1000), 
+                   labels = seq(0, 100, by = 10)) +
+  coord_cartesian(xlim = c(0, 9000)) +
+  theme(axis.text.y = element_blank(),
+        #axis.ticks.y = element_blank(), 
+        axis.line.y = element_blank(),
+        panel.border = element_rect(size = 0.25, fill = NA)) +
+  labs(y = NULL, x = "Recording time, s") +
+  theme(strip.background = element_blank(),
+        strip.placement = "outside",
+        legend.position = "none",
+        aspect.ratio = 0.125) -> p.raster_toshow
+ggsave(plot = p.raster_toshow, 
+       filename = paste0("../output/p.3.4.raster.pdf"),
+       width = 6,
+       height = 2.5)
+```
+
+
+########################################################  
+#   4. Figure 5 plots
+################################################################################
+## 4.1 MA-plots in shnELAVL for Neurites and Soma. Downregulated transcripts are coloured in red (lg2FC >= log2(1.5))
+```{r}
+dds.shelavl <- read_rds("../data/PCN.TwoWay_shElavl234/DDS.2c.RDS")
+purrr::map2_dfr(c("Soma_shElavl234", "Neurite_shElavl234"),
+                c("Soma_Scrambled", "Neurite_Scrambled"),
+                ~ results(dds.shelavl, contrast = c("condition", .x, .y)) %>% 
+                  as_tibble(., rownames = "gene_id") %>% 
+                  mutate(comp = paste0(.x, ".vs.", .y))) %>% 
+  inner_join(mm10Ann, ., by = "gene_id") -> res_long.shelavl
+
+res.shelavl_n <- res_long.shelavl %>% 
+  drop_na() %>% 
+  filter(comp == "Neurite_shElavl234.vs.Neurite_Scrambled") %>% 
+  mutate(
+    sign = case_when(
+      log2FoldChange < -log2(1.5) & padj < 0.05 ~ "Downregulated",
+      T ~ "NS"
+      ),
+    sign = ifelse(lfcSE > 1, "NS", sign)
+    )
+
+ggplot(data = res.shelavl_n, aes(x = log2(baseMean), y = log2FoldChange)) + 
+  geom_point(aes(color = sign, alpha = sign), size = 0.35) +
+  #geom_point(data = res.pvsc_slam %>% filter(gene_name %in% l.mrks$Psynapse), color = "red", size = 0.75) +
+  # ggrepel::geom_label_repel(data = res.shelavl_n %>% filter(gene_name %in% l.mrks$Psynapse), 
+  #                           aes(label = gene_name),
+  #                           force = 92, nudge_x = 2, nudge_y = 1) +
+  geom_hline(yintercept = c(-0.58, 0, 0.58), linetype = c("dashed", "solid", "dashed")) +
+  scale_color_manual(values = alpha(c("red", "gray50"), 0.67), name = "shElavl234") +
+  scale_alpha_manual(values = c(0.7, 0.2, 0.7)) +
+  guides(color = guide_legend(override.aes = list(size = 3)),
+         alpha = "none") +
+  scale_y_continuous(breaks = seq(-6, 6, by = 2)) +
+  theme(aspect.ratio = 1) -> p.4.1.Neurite
+
+res.shelavl_s <- res_long.shelavl %>% 
+  drop_na() %>% 
+  filter(comp == "Soma_shElavl234.vs.Soma_Scrambled") %>% 
+  mutate(
+    sign = case_when(
+      log2FoldChange < -log2(1.5) & padj < 0.05 ~ "Downregulated",
+      T ~ "NS"
+      ),
+    sign = ifelse(lfcSE > 1, "NS", sign)
+    )
+
+ggplot(data = res.shelavl_s, aes(x = log2(baseMean), y = log2FoldChange)) + 
+  geom_point(aes(color = sign, alpha = sign), size = 0.35) +
+  #geom_point(data = res.pvsc_slam %>% filter(gene_name %in% l.mrks$Psynapse), color = "red", size = 0.75) +
+  # ggrepel::geom_label_repel(data = res.shelavl_n %>% filter(gene_name %in% l.mrks$Psynapse), 
+  #                           aes(label = gene_name),
+  #                           force = 92, nudge_x = 2, nudge_y = 1) +
+  geom_hline(yintercept = c(-0.58, 0, 0.58), linetype = c("dashed", "solid", "dashed")) +
+  scale_color_manual(values = alpha(c("red", "gray50"), 0.67), name = "shElavl234") +
+  scale_alpha_manual(values = c(0.7, 0.2, 0.7)) +
+  guides(color = guide_legend(override.aes = list(size = 3)),
+         alpha = "none") +
+  scale_y_continuous(breaks = seq(-6, 6, by = 2)) +
+  theme(aspect.ratio = 1) -> p.4.1.Soma
+
+ggsave(p.4.1.Neurite, filename = "../output/p.4.1.Neurite.pdf",
+       width = 5, height = 5)
+ggsave(p.4.1.Soma, filename = "../output/p.4.1.Soma.pdf",
+       width = 5, height = 5)
+```
+
+
+################################################################################
+## 4.2 Boxplots showing the distributions of AREs (in UTR) of transcripts downregulated by ELAVls KD.
+```{r}
+##
+res_comp.wide_shelavl <- read_rds("../data/PCN.TwoWay_shElavl234/DEres.2c_Comp.Wide.RDS") %>% 
+  inner_join(mm10Ann, ., by = c("gene_id" = "gene_name"))
+v.shelavl_down <- read_gmt("../data/PCN.TwoWay_shElavl234/shElavl234.vs.Scrambled_N&S_lg2fc0.58.gmt")$Scrambled
+t.are <- read_tsv("../data/TPU_ARE.cts.tsv", show_col_types = F)
+
+
+##
+rbind(
+  res_comp.wide_shelavl %>% 
+    filter(gene_name %in% v.shelavl_down) %>% 
+    mutate(cat = "shElavl234 Down S+N"),
+  res_comp.wide_shelavl %>% 
+    mutate(cat = "Population")
+) %>% 
+  mutate(delta_loc = log2FoldChange_shElavl234 - log2FoldChange_Scrambled) %>% 
+  inner_join(., t.are[, c("gene_id", "TPU.length", "ARE.cts")], by = "gene_id") -> t.shelavl
+
+##
+ggplot(data = t.shelavl, aes(x = ARE.cts, y = cat)) + 
+  geom_boxplot(aes(fill = cat),
+               size = 0.25, 
+               color = "black", 
+               outlier.colour = "gray50",
+               outlier.alpha = 0.35,
+               outlier.size = 0.75) +
+  scale_fill_manual(values = c("gray50", "red")) +
+  coord_cartesian(xlim = c(0, 40)) + 
+  labs(y = "", x = "ARE count") +
+  theme(aspect.ratio = 0.35, legend.position = "none") -> p.4.2
+
+ggsave(plot = p.4.2, filename = "../output/p.4.2.pdf", width = 5, height = 5.5)
+
+rbind(
+  p.4.2$data %>% filter(str_detect(cat, "Elavl")),
+  p.4.2$data %>% filter(!str_detect(cat, "Elavl")) %>% slice_sample(n = 336) ## number of transcripts in a group of interest
+) -> tmp
+
+tibble(
+group = "",
+variable = "",
+value = "ARE count",
+comparison = "shElavl234 Down S+N.vs.Random sample",
+test = "Welch's two sample t-test",
+`p-value` = t.test(formula = ARE.cts ~ cat, data = tmp)$p.value
+) %>% 
+  mutate(`p-adjusted` = p.adjust(`p-value`, method = "fdr"),
+         sign.symb = case_when(
+         `p-adjusted` < 0.001 ~ "***",
+         `p-adjusted` < 0.01 ~ "**",
+         `p-adjusted` < 0.05 ~ "*",
+         T ~ "NS")
+         ) -> p.4.2_stats
+write_tsv(p.4.2_stats, "../output/p.4.2_stats.tsv")
+```
+
+
+
+################################################################################
+## 4.3. Boxplots showing the change in localisation for targets of ELAVls (transcripts that are down-regulated upon ELAVls KD).
+```{r}
+ggplot(data = t.shelavl, aes(x = delta_loc, y = cat)) + 
+  geom_boxplot(aes(fill = cat),
+               size = 0.25, 
+               color = "black", 
+               outlier.colour = "gray50",
+               outlier.alpha = 0.35,
+               outlier.size = 0.75) +
+  scale_fill_manual(values = c("gray50", "red")) +
+  geom_vline(xintercept = 0, size = 0.5) +
+  scale_x_continuous(breaks = seq(-6, 6, by = 1)) +
+  labs(x = "delta lg2FC Neurite vs Soma\nshElavl234 - Scrambled", y = "") + 
+  theme(aspect.ratio = 0.35, legend.position = "none") -> p.4.3
+
+ggsave(plot = p.4.3, filename = "../output/p.4.3.pdf", width = 6, height = 3)
+
+rbind(
+  t.shelavl %>% filter(str_detect(cat, "Elavl")),
+  t.shelavl %>% filter(!str_detect(cat, "Elavl")) %>% slice_sample(n = 336)
+) -> tmp
+
+tibble(
+group = "",
+variable = "",
+value = "delta lg2FC shElavl234 - Scrambed",
+comparison = "shElavl234 Down S+N.vs.Random sample",
+test = "Welch's two sample t-test",
+`p-value` = t.test(formula = delta_loc ~ cat, data = tmp)$p.value
+) %>% 
+  mutate(`p-adjusted` = p.adjust(`p-value`, method = "fdr"),
+         sign.symb = case_when(
+         `p-adjusted` < 0.001 ~ "***",
+         `p-adjusted` < 0.01 ~ "**",
+         `p-adjusted` < 0.05 ~ "*",
+         T ~ "NS")
+         ) -> p.4.3_stats
+write_tsv(p.4.3_stats, "../output/p.4.3_stats.tsv")
+```
+
+
+################################################################################
+## 4.4. Bar plot showing the GO terms overrepresented among targets of ELAVls (transcripts that are down-regulated upon ELAVls KD).
+```{r}
+gost(list(shElavl234 = v.shelavl_down), organism = "mmusculus", ordered_query = F, significant = T, evcodes = T) -> gostres
+
+gostres$result %>% 
+  dplyr::select(-evidence_codes) %>% 
+  split(., .$query) %>% 
+  purrr::map_dfr(., 
+                 function(gores) {
+                   gores %>%
+                     #dplyr::select() %>% 
+                     filter(str_detect(source, "GO|KEGG"), 
+                            term_size < 500,
+                            !str_detect(term_name, "Corona|Hippo")) %>% 
+                     arrange(term_size) -> gores.filt
+                   purrr::map_dfr(gores.filt$term_id,
+                                  function(term) {
+                                    gores.filt %>% filter(term_id == term) -> gores.term
+                                    gores.term %>% pull(parents) %>% unlist() -> v.pars
+                                    ## break and return if the parent of the starting term is not present
+                                    if (!any(v.pars %in% gores.filt$term_id)) {
+                                        return(
+                                          gores.term %>% 
+                                            mutate(parents = paste0(unlist(parents), collapse = ","))
+                                        )
+                                      }
+                                    v.chlds <- gores.term$term_id
+                                    ## look along parents until there are no more detected terms
+                                    while (length(v.pars) > 0) {
+                                      v.pars.out <- v.pars
+                                      gores.filt %>% filter(term_id %in% v.pars) %>% pull(parents) %>% unlist() -> v.pars
+                                      if (!any(v.pars %in% gores.filt$term_id)) {
+                                        break
+                                      }
+                                      v.chlds <- c(v.chlds, v.pars)
+                                    }
+                                    ## remove the last element of the child vector since it the term we want to keep
+                                    v.chlds <- v.chlds[!(v.chlds %in% v.pars.out)] ## not used after all
+                                    ## update the table
+                                    gores.filt %>% 
+                                      filter(term_id %in% v.pars.out) %>% 
+                                      mutate(parents = paste0(unlist(parents), collapse = ","))
+                                  }
+                                  ) %>% distinct(term_id, .keep_all = T)
+                 } 
+                 ) -> t.gostres_clpsd
+
+goa_mouse <- read_tsv("../data/auxiliary/goa_mouse.gpi", skip = 22, col_names = F, show_col_types = F)
+goa_mouse <- goa_mouse %>% dplyr::select(gene_name = X3, info = X4)
+
+terms <- unique(t.gostres_clpsd$term_id)
+terms.names <- t.gostres_clpsd[which(terms %in% t.gostres_clpsd$term_id), ]$term_name
+purrr::map2_dfr(terms, terms.names,
+                function(term, name) {
+                  t.gostres_clpsd %>% filter(term_id == term) %>% dplyr::slice(1) %>% pull(intersection) %>% 
+                    str_split_fixed(., ",", Inf) %>% 
+                    as.character() -> term.genes
+                  goa_mouse %>% filter(gene_name %in% term.genes) %>% 
+                    mutate(GO.term_id = term,
+                           GO.term_name = name) %>% 
+                    dplyr::select(contains("GO"), everything())
+                }) -> t.gostres_genes
+
+write_tsv(t.gostres_genes, "../output/p.4.4_GO.termAnnotation.tsv")
+
+split(t.gostres_clpsd, t.gostres_clpsd$query) %>% 
+  purrr::map(.,
+             ~ .x %>% 
+               mutate(term_name = str_wrap(term_name, 42)) %>% 
+               group_by(source) %>% 
+               arrange(p_value) %>% 
+               dplyr::slice(1:5) %>% 
+               #arrange(desc(intersection_size / query_size)) %>% 
+               #filter(source != "TF") %>% 
+               ggplot(data = ., aes(x = 100 * intersection_size / query_size, y = term_name)) + 
+               geom_col(aes(fill = -log10(p_value)), size = 0.25, color = "black") + 
+               facet_grid(source ~ ., scales = "free") + 
+               scale_fill_gradientn(colors = RColorBrewer::brewer.pal(9, "Reds"), limits = c(0, 10)) + 
+               labs(x = "Intersection / query, %", y = "Term name")) -> l.p_GOshelavl
+
+ggsave(plot = l.p_GOshelavl$shElavl234, filename = "../output/p.4.4.pdf", width = 6, height = 4)
+```
+
+
+########################################################  
+#   5. Figure 6 plots
+################################################################################
+## 5.1 ECDFs showing the the distributions of localisation of transcripts with the most optimal (green) and suboptimal codon composition (blue)
+```{r}
+## results of the ORFEOME library sequencing
+res_orfm <- read_tsv("../data/t.orfm.res.tsv", show_col_types = F)
+
+ggsave(plot = plot_tai_ecdf(res_orfm, 0.1), 
+       filename = "../output/p.5.1.pdf",
+       width = 4, height = 3.75)
+```
+
+########################################################  
+#   6. Plots related to Supplementary Figure 1
+################################################################################
+## 6.1. MA-plots for compartment separation RNA-seq runs including: 3c-PCN Slamseq WT, 3c-PCN RNA-seq GFP + dnCAF1, 2c-Ascl1 Slamseq WT
+```{r}
+l.mrks <- list()
+l.mrks[["Soma"]] <- c("Snhg11", "Ncoa3", "Malat1", "Miat", "Son")
+l.mrks[["Nucleus"]] <- c("Hnrnph1","Snhg11", "Miat", "Malat1", "Meg3")
+l.mrks[["Psynapse"]] <- c("Homer2", "Map2", "Cox5b", "Kif5a", "Camk2a")#, "Gap43", "Sptbn4", "Nav1", "Ank3", "Nefh", "Nefl", "Mapt")
+l.mrks[["Soma.2c"]] <- c("Nup210", "Snhg11", "Xist")
+l.mrks[["Neurite.2c"]] <- c("Tagln", "Col3a1", "Lamc1", "Lamb1", "Lama1", "Myo1c")
+
+
+dds.sl3c <- read_rds("../data/PCN.ThreeWay_Slamseq.Rerun/DDS.3cSlam.RDS")
+purrr::map2_dfr(c("Pro", "Cyto"),
+                c("Cyto", "Nuc"),
+                ~ results(dds.sl3c, contrast = c("group", .x, .y)) %>% 
+                  as_tibble(., rownames = "gene_id") %>% 
+                  mutate(comp = paste0(.x, ".vs.", .y))) %>% 
+  inner_join(mm10Ann, ., by = "gene_id") -> res_sl3c.long
+
+res.pvsc_slam <- res_sl3c.long %>% 
+  drop_na() %>% 
+  filter(comp == "Pro.vs.Cyto") %>% 
+  mutate(
+    sign = case_when(
+      log2FoldChange > log2(1.5) & padj < 0.05 ~ "Projections",
+      log2FoldChange < -log2(1.5) & padj < 0.05 ~ "Cytoplasm",
+      T ~ "NS"
+      ),
+    sign = ifelse(lfcSE > 1, "NS", sign)
+    )
+
+ggplot(data = res.pvsc_slam, aes(x = log2(baseMean), y = log2FoldChange)) + 
+  geom_point(aes(color = sign, alpha = sign), size = 0.35) +
+  geom_point(data = res.pvsc_slam %>% filter(gene_name %in% l.mrks$Psynapse), color = "red", size = 0.75) +
+  ggrepel::geom_label_repel(data = res.pvsc_slam %>% filter(gene_name %in% l.mrks$Psynapse), 
+                            aes(label = gene_name),
+                            force = 92, nudge_x = 2, nudge_y = 1) +
+  geom_hline(yintercept = c(-0.58, 0, 0.58), linetype = c("dashed", "solid", "dashed")) +
+  scale_color_manual(values = pal_loc.3way[1:3], name = "Localization") +
+  scale_alpha_manual(values = c(0.7, 0.2, 0.7)) +
+  guides(color = guide_legend(override.aes = list(size = 3)),
+         alpha = "none") +
+  scale_y_continuous(breaks = seq(-6, 6, by = 2)) +
+  theme(aspect.ratio = 1) -> p.sf1_MA.3c.Slamseq_Pro.vs.Cyto
+
+res.cvsn_slam <- res_sl3c.long %>% 
+  drop_na() %>% 
+  filter(comp == "Cyto.vs.Nuc") %>% 
+  mutate(
+    sign = case_when(
+      log2FoldChange > log2(1.5) & padj < 0.05 ~ "Cytoplasm",
+      log2FoldChange < -log2(1.5) & padj < 0.05 ~ "Nucleus",
+      T ~ "NS"
+      ),
+    sign = ifelse(lfcSE > 1, "NS", sign)
+    )
+
+ggplot(data = res.cvsn_slam, aes(x = log2(baseMean), y = log2FoldChange)) + 
+  geom_point(aes(color = sign, alpha = sign), size = 0.35) +
+  geom_point(data = res.cvsn_slam %>% filter(gene_name %in% l.mrks$Nucleus), color = "red", size = 0.75) +
+  ggrepel::geom_label_repel(data = res.cvsn_slam %>% filter(gene_name %in% l.mrks$Nucleus), 
+                            aes(label = gene_name),
+                            force = 177) +
+  geom_hline(yintercept = c(-0.58, 0, 0.58), linetype = c("dashed", "solid", "dashed")) +
+  scale_color_manual(values = pal_loc.3way[2:4], name = "Localization") +
+  scale_alpha_manual(values = c(0.7, 0.2, 0.7)) +
+  guides(color = guide_legend(override.aes = list(size = 3)),
+         alpha = "none") +
+  scale_y_continuous(breaks = seq(-6, 6, by = 2)) +
+  theme(aspect.ratio = 1) -> p.sf1_MA.3c.Slamseq_Cyto.vs.Nuc
+
+
+####
+res_3c.long <- read_rds("../data/PCN.ThreeWay_dnCaf1.CompSep/DEres.3c_Comp.Long.RDS")
+res.pvsc_gfp <- res_3c.long %>% 
+  filter(comp == "Pro_GFP.vs.Cyto_GFP") %>% 
+  mutate(comp = str_remove_all(comp, "_GFP")) %>% 
+  inner_join(mm10Ann[, c("gene_id", "gene_name", "description")], ., by = "gene_name")
+
+ggplot(data = res.pvsc_gfp, aes(x = log2(baseMean), y = log2FoldChange)) + 
+  geom_point(aes(color = sign, alpha = sign), size = 0.35) +
+  geom_point(data = res.pvsc_gfp %>% filter(gene_name %in% l.mrks$Psynapse), color = "red", size = 0.75) +
+  ggrepel::geom_label_repel(data = res.pvsc_gfp %>% filter(gene_name %in% l.mrks$Psynapse), 
+                            aes(label = gene_name),
+                            force = 92, nudge_x = 2, nudge_y = 1) +
+  geom_hline(yintercept = c(-0.58, 0, 0.58), linetype = c("dashed", "solid", "dashed")) +
+  scale_color_manual(values = pal_loc.3way[1:3], name = "Localization") +
+  scale_alpha_manual(values = c(0.7, 0.2, 0.7)) +
+  guides(color = guide_legend(override.aes = list(size = 3)),
+         alpha = "none") +
+  scale_y_continuous(breaks = seq(-6, 6, by = 2)) +
+  theme(aspect.ratio = 1) -> p.sf1_MA.3c.GFP_Pro.vs.Cyto
+
+res.cvsn_gfp <- res_3c.long %>% 
+  filter(comp == "Cyto_GFP.vs.Nuc_GFP") %>% 
+  mutate(comp = str_remove_all(comp, "_GFP")) %>% 
+  inner_join(mm10Ann[, c("gene_id", "gene_name", "description")], ., by = "gene_name")
+
+ggplot(data = res.cvsn_gfp, aes(x = log2(baseMean), y = log2FoldChange)) + 
+  geom_point(aes(color = sign, alpha = sign), size = 0.35) +
+  geom_point(data = res.cvsn_gfp %>% filter(gene_name %in% l.mrks$Nucleus), color = "red", size = 0.75) +
+  ggrepel::geom_label_repel(data = res.cvsn_gfp %>% 
+                              filter(gene_name %in% l.mrks$Nucleus), 
+                            aes(label = gene_name),
+                            force = 269, nudge_y = -1.5) +
+  geom_hline(yintercept = c(-0.58, 0, 0.58), linetype = c("dashed", "solid", "dashed")) +
+  scale_color_manual(values = pal_loc.3way[2:4], name = "Localization") +
+  scale_alpha_manual(values = c(0.7, 0.2, 0.7)) +
+  guides(color = guide_legend(override.aes = list(size = 3)),
+         alpha = "none") +
+  scale_y_continuous(breaks = seq(-6, 6, by = 2)) +
+  theme(aspect.ratio = 1) -> p.sf1_MA.3c.GFP_Cyto.vs.Nuc
+
+
+res.pvsc_dncaf1 <- res_3c.long %>% 
+  filter(comp == "Pro_dnCaf1.vs.Cyto_dnCaf1") %>% 
+  mutate(comp = str_remove_all(comp, "_GFP|_dnCaf1")) %>% 
+  inner_join(mm10Ann[, c("gene_id", "gene_name", "description")], ., by = "gene_name")
+
+ggplot(data = res.pvsc_dncaf1, aes(x = log2(baseMean), y = log2FoldChange)) + 
+  geom_point(aes(color = sign, alpha = sign), size = 0.35) +
+  geom_point(data = res.pvsc_dncaf1 %>% filter(gene_name %in% l.mrks$Psynapse), color = "red", size = 0.75) +
+  ggrepel::geom_label_repel(data = res.pvsc_dncaf1 %>% filter(gene_name %in% l.mrks$Psynapse), 
+                            aes(label = gene_name),
+                            force = 92, nudge_x = 2, nudge_y = 1) +
+  geom_hline(yintercept = c(-0.58, 0, 0.58), linetype = c("dashed", "solid", "dashed")) +
+  scale_color_manual(values = pal_loc.3way[1:3], name = "Localization") +
+  scale_alpha_manual(values = c(0.7, 0.2, 0.7)) +
+  guides(color = guide_legend(override.aes = list(size = 3)),
+         alpha = "none") +
+  scale_y_continuous(breaks = seq(-6, 6, by = 2)) +
+  theme(aspect.ratio = 1) -> p.sf1_MA.3c.dnCAF1_Pro.vs.Cyto
+
+res.cvsn_dncaf1 <- res_3c.long %>% 
+  filter(comp == "Cyto_dnCaf1.vs.Nuc_dnCaf1") %>% 
+  mutate(comp = str_remove_all(comp, "_GFP|_dnCaf1")) %>% 
+  inner_join(mm10Ann[, c("gene_id", "gene_name", "description")], ., by = "gene_name")
+
+ggplot(data = res.cvsn_dncaf1, aes(x = log2(baseMean), y = log2FoldChange)) + 
+  geom_point(aes(color = sign, alpha = sign), size = 0.35) +
+  geom_point(data = res.cvsn_dncaf1 %>% filter(gene_name %in% l.mrks$Nucleus), color = "red", size = 0.75) +
+  ggrepel::geom_label_repel(data = res.cvsn_dncaf1 %>% filter(gene_name %in% l.mrks$Nucleus), 
+                            aes(label = gene_name),
+                            force = 269, nudge_y = -1.51) +
+  geom_hline(yintercept = c(-0.58, 0, 0.58), linetype = c("dashed", "solid", "dashed")) +
+  scale_color_manual(values = pal_loc.3way[2:4], name = "Localization") +
+  scale_alpha_manual(values = c(0.7, 0.2, 0.7)) +
+  guides(color = guide_legend(override.aes = list(size = 3)),
+         alpha = "none") +
+  scale_y_continuous(breaks = seq(-6, 6, by = 2)) +
+  theme(aspect.ratio = 1) -> p.sf1_MA.3c.dnCAF1_Cyto.vs.Nuc
+
+## 2c Slamseq Ascl1
+dds.2cslam <- read_rds("../data/Ascl1.Compartments_Slamseq/DDS.Slam.RDS")
+
+purrr::map2_dfr(c("Soma_shElavl234", "Neurite_shElavl234"),
+                c("Soma_Scrambled", "Neurite_Scrambled"),
+                ~ results(dds.shelavl, contrast = c("condition", .x, .y)) %>% 
+                  as_tibble(., rownames = "gene_id") %>% 
+                  mutate(comp = paste0(.x, ".vs.", .y))) %>% 
+  inner_join(mm10Ann, ., by = "gene_id") -> res_long.shelavl
+results(dds.2cslam, contrast = c("group", "Soma", "Neurite")) %>% as_tibble(., rownames = "gene_id") -> tmp
+
+ggplot(data = tmp, aes(x = log2(baseMean), y = log2FoldChange)) + 
+  geom_point() + 
+  ylim(c(-5, 5))
+
+res_2c <- read_tsv("../data/Ascl1.Compartments_Slamseq/DE.tab_Tall.tsv")
+res.nvss_2c.slam <- res_2c %>% 
+  inner_join(mm10Ann[, c("gene_id", "gene_name", "description")], ., by = c("gene_id" = "gene")) %>% 
+  dplyr::rename(sign = loc.var)
+
+ggplot(data = res.nvss_2c.slam, aes(x = log2(baseMean), y = log2FoldChange)) + 
+  geom_point(aes(color = sign, alpha = sign), size = 0.35) +
+  geom_point(data = res.nvss_2c.slam %>% filter(gene_name %in% c(l.mrks$Soma.2c, l.mrks$Neurite.2c)), 
+             color = "red", 
+             size = 0.75) +
+  ggrepel::geom_label_repel(data = res.nvss_2c.slam %>% filter(gene_name %in% c(l.mrks$Soma.2c, l.mrks$Neurite.2c)), 
+                            aes(label = gene_name),
+                            force = 169, nudge_y = .51) +
+  geom_hline(yintercept = c(-0.58, 0, 0.58), linetype = c("dashed", "solid", "dashed")) +
+  scale_color_manual(values = pal_loc.2way[1:3], name = "Localization") +
+  scale_alpha_manual(values = c(0.7, 0.2, 0.7)) +
+  guides(color = guide_legend(override.aes = list(size = 3)),
+         alpha = "none") +
+  scale_y_continuous(breaks = seq(-6, 6, by = 2)) +
+  theme(aspect.ratio = 1) -> p.sf1_MA.2c_N.vs.S
+
+
+##
+purrr::map2(list(p.sf1_MA.3c.GFP_Cyto.vs.Nuc,
+                 p.sf1_MA.3c.GFP_Pro.vs.Cyto,
+                 p.sf1_MA.3c.dnCAF1_Cyto.vs.Nuc,
+                 p.sf1_MA.3c.dnCAF1_Pro.vs.Cyto,
+                 p.sf1_MA.3c.Slamseq_Pro.vs.Cyto,
+                 p.sf1_MA.3c.Slamseq_Cyto.vs.Nuc,
+                 p.sf1_MA.2c_N.vs.S),
+            c("p.6.1_MA.3c.GFP_Cyto.vs.Nuc",
+              "p.6.1_MA.3c.GFP_Pro.vs.Cyto",
+              "p.6.1_MA.3c.dnCAF1_Cyto.vs.Nuc",
+              "p.6.1_MA.3c.dnCAF1_Pro.vs.Cyto",
+              "p.6.1_MA.3c.Slamseq_Pro.vs.Cyto",
+              "p.6.1_MA.3c.Slamseq_Cyto.vs.Nuc",
+              "p.6.1_MA.2c_N.vs.S"),
+            function(MAplot, plotname) {
+              ggsave(plot = MAplot, filename = paste0("../output/", plotname, ".pdf"), width = 5, height = 5)
+            })
+```
+
+
+################################################################################
+## 6.2. Boxplots showing T to C conversion rates estimated from Slamseq runs
+```{r}
+## aux
+plot_ct <- function(tab_t0nn, ylims = c(-2, 10)) {
+  ggplot(data = tab_t0nn, 
+       aes(x = conv, y = CR.avg * 100, color = col_var)) + 
+    geom_boxplot(outlier.shape = NA) + 
+    scale_color_manual(values = c("grey30", "red"), guide = "none") +
+    stat_summary(fun.data = function(x) tibble(y = -(0.25 * 8), 
+                                               label = round(mean(x), 2)), 
+                 geom = "text", 
+                 size = 4.5,
+                 vjust = 0.5, 
+                 hjust = 0.1, 
+                 angle = 90) +
+    #geom_hline(yintercept = 0) +
+    coord_cartesian(ylim = ylims) +
+    scale_y_continuous(breaks = seq(0, 10, by = 2)) +
+    #facet_grid(. ~ group) +
+    #ggforce::facet_zoom(ylim = c(0, 0.6), zoom.size = , 
+    #zoom.data = ifelse(conversion != "T->C", NA, FALSE), horizontal = FALSE) +
+    theme(aspect.ratio = 1,
+          axis.text.x = element_text(angle = 45, 
+                                     hjust = 1, 
+                                     colour = c(rep("black", 10), "red", "black"))
+    ) +
+    labs(y = "Conversion rate (%)", 
+         x = "")
+}
+
+### mESC neurons
+tab_cr_T0NN.mESC <- read_tsv("../data/cr_T0.NN_mESC.tsv",
+                            show_col_types = F)
+plot_ct(tab_cr_T0NN.mESC, 
+        ylims = c(-2, 6.5)
+        ) -> p.6.2.mesc
+
+### Whole Primary cortical neurons
+tab_cr_T0NN.PCN <- read_tsv("../data/cr_T0.NN_PCN.tsv",
+                            show_col_types = F)
+plot_ct(tab_cr_T0NN.PCN,
+        ylims = c(-2, 8)
+        ) -> p.6.2.pcnwhole
+
+### 3-way compartment separation of Primary cortical neurons
+tab_cr_T0NN.PCN3c <- read_tsv("../data/cr_T0.NN_PCN3c.tsv",
+                              show_col_types = F)
+plot_ct(tab_cr_T0NN.PCN3c, 
+        ylims = c(-2, 6)
+        ) -> p.6.2.pcn3c
+
+ggsave(plot = p.6.2.mesc, filename =  paste0("../output/p.6.2.mESC.pdf"), width = 4, height = 4)
+ggsave(plot = p.6.2.pcnwhole, filename =  paste0("../output/p.6.2.PCN.pdf"), width = 4, height = 4)
+ggsave(plot = p.6.2.pcn3c, filename =  paste0("../output/p.6.2.PCN3c.pdf"), width = 4, height = 4)
+```
+
+################################################################################
+## 6.3. Boxplots showing normalized conversion rates per replicate along timepoints in Slamseq experiments.
+```{r}
+t.cr.n <- read_tsv("../data/PCN.ThreeWay_Slamseq.Rerun/PCN3c_CR.TC_filt.norm.tsv",
+                   show_col_types = F) %>%  
+  mutate(gene_id = str_split_fixed(gene, "_", 2)[, 1],
+         gene_name = str_split_fixed(gene, "_", 2)[, 2],
+         group = case_when(
+           group == "Pro" ~ "Neurite",
+           group == "Nuc" ~ "Nucleus",
+           group == "Cyto" ~ "Cytoplasm",
+           T ~ "ayy"
+         ),
+         group = factor(group, levels = c("Nucleus", "Cytoplasm", "Neurite"))) %>% 
+  filter(gene_id %in% unique(str_split_fixed(l.hl.comps$PCN.3c$gene, "_", 2)[, 1])) %>% 
+  dplyr::select(contains("gene_"), group, timepoint, b.rep, cr_raw, cr_norm)
+
+t.cr.n %>% 
+  filter(timepoint != 0) %>% 
+  group_by(gene_id, gene_name, group, timepoint) %>% 
+  summarise(cr_norm.avg = mean(cr_norm),
+            cr_norm.sd = sd(cr_norm), .groups = "drop") %>% 
+  mutate(timepoint = factor(timepoint, levels = c("4", "8", "16"))) %>% 
+  ggplot(data = , aes(x = timepoint, y = cr_norm.avg)) + 
+  geom_boxplot(aes(fill = group), outlier.shape = NA, size = 0.25) +
+  scale_fill_manual(values = alpha(unname(pal_loc.3way)[c(4,2,1)], 0.67)) + 
+  coord_cartesian(ylim = c(0, 1)) +
+  guides(colour = "none") + 
+  labs(y = "Normalized T->C conversion rate", x = "Timepoint, hours", fill = "Compartment") + 
+  theme(aspect.ratio = 1, legend.position = c(0.85, 0.8)) -> p.6.3
+
+
+ggsave(p.6.3, filename = "../output/p.6.3.pdf", width = 5.5, height = 5.5, units = "in")
+```
+
+
+################################################################################
+## 6.4. 2-dimensional density plot showing correlation of delta Half-live and localisation of mRNAs between Neurites and Soma for 2c and 3c compartment separations.
+```{r}
+### 3c
+hlcomps.3c <- tmp.ridges %>%
+  filter(str_detect(group, "PCN"), !str_detect(group, "Nucleus")) %>% 
+  mutate(group = str_remove(group, ", PCN")) %>% 
+  pivot_wider(names_from = "group", values_from = "Half_life") %>% 
+  mutate(delta_hl = Neurite - Soma)
+res.pvsc_gfp %>% 
+  inner_join(., hlcomps.3c, by = c("gene_id", "gene_name")) %>%
+  #filter(enr.var != "NS") %>% 
+  #filter(padj < 0.05) %>% 
+  ggplot(data = ., aes(x = log2FoldChange, y = delta_hl)) + 
+  geom_bin_2d(color = "gray50", size = 0.1, bins = 60) +
+  scale_fill_gradientn(colours = RColorBrewer::brewer.pal(9, name = "Oranges")[2:9]) +
+  geom_vline(xintercept = 0, size = 0.5) + 
+  geom_hline(yintercept = 0, size = 0.5) +
+  geom_smooth(method = "lm", formula = y ~ x) +
+  #geom_density_2d() +
+  #geom_point(alpha = 0.15, size = 0.3) +
+  ggpubr::stat_cor(size = 4.5, label.y = 15, label.x = -5) + 
+  coord_cartesian(x = c(-5, 5), y = c(-9, 16)) +
+  scale_x_continuous(breaks = seq(-4, 4, by = 2)) +
+  scale_y_continuous(breaks = seq(-8, 16, by = 4)) +
+  labs(x = "lg2FC Neurite vs Soma", y = "delta mRNA Half-life, hours\nNeurite vs Soma") + 
+  theme(aspect.ratio = 1,
+        legend.position = c(0.1, 0.65),
+        legend.background = element_blank()) -> p.6.4.3c
+
+ggsave(plot = p.6.4.3c, 
+       filename = "../output/p.6.4.3c.pdf", 
+       width = 5, height = 5)
+
+
+### 2c
+hlcomps.2c <- read_tsv("../data/Ascl1.Compartments_Slamseq/data_hl.softfilt.wide.tsv", show_col_types = F) %>% 
+  drop_na() %>% 
+  mutate(delta_hl = Neurite - Soma)
+
+res.zap <- read_tsv("/local/artem/Projects/Stability/Code/data/Zappulo_2017/Zappulo_soft-filt_Proc_vs_Soma_deseq_res.tsv",
+                    show_col_types = F)
+res.zap %>% 
+  mutate(gene_id = str_split_fixed(gene, "_", 2)[, 1],
+         gene_name = str_split_fixed(gene, "_", 2)[, 2]) %>% 
+  dplyr::select(-gene) %>% 
+  dplyr::select(contains("gene"), everything()) %>% 
+  inner_join(., hlcomps.2c, by = c("gene_id", "gene_name")) %>%
+  ggplot(data = ., aes(x = log2FoldChange, y = delta_hl)) + 
+  geom_bin_2d(color = "gray50", size = 0.1, bins = 60) +
+  scale_fill_gradientn(colours = RColorBrewer::brewer.pal(9, name = "Oranges")[2:9]) +
+  geom_vline(xintercept = 0, size = 0.5) + 
+  geom_hline(yintercept = 0, size = 0.5) +
+  geom_smooth(method = "lm", formula = y ~ x) +
+  ggpubr::stat_cor(size = 4.5, label.y = 15, label.x = -5) + 
+  coord_cartesian(x = c(-5, 5), y = c(-9, 16)) +
+  scale_x_continuous(breaks = seq(-4, 4, by = 2)) +
+  scale_y_continuous(breaks = seq(-8, 16, by = 4)) +
+  labs(x = "lg2FC Neurite vs Soma", y = "delta mRNA Half-life, hours\nNeurite vs Soma") + 
+  theme(aspect.ratio = 1,
+        legend.position = c(0.1, 0.65),
+        legend.background = element_blank()) -> p.6.4.2c
+
+ggsave(plot = p.6.4.2c, 
+       filename = "../output/p.6.4.2c.pdf", 
+       width = 5, height = 5)
+```
+
+
+########################################################  
+#   7. Plots related to Supplementary Figure 5
+################################################################################
+## 7.1. Bar-plots showing fractions of m6A- enriched/depleted transcripts among transcripts that are up-/down- regualted upon shMettl3 and shYthdf123 KDs.
+```{r}
+de.shmettl3 <- read_gmt("../data/PCN.TwoWay_shMettl3/shMettl3.vs.Scrambled_N&S_lg2fc0.58.gmt")
+de.shythdf <- read_gmt("../data/PCN.TwoWay_shYthdf123/shYthdf123.vs.Scrambled_N&S_lg2fc0.58.gmt")
+msa_tab.cons %>% 
+  inner_join(mm10Ann, ., by = "gene_id") %>% 
+  mutate(shMettl3 = case_when(
+    gene_name %in% de.shmettl3$shMettl3 ~ "Up-regulated",
+    gene_name %in% de.shmettl3$Scrambled ~ "Down-regulated",
+    gene_name %in% de.shmettl3$NS ~ "NS",
+    T ~ "NA"
+  )) %>% 
+  mutate(shYthdf123 = case_when(
+    gene_id %in% de.shythdf$shYTHDF123 ~ "Up-regulated",
+    gene_id %in% de.shythdf$Scrambled ~ "Down-regulated",
+    gene_id %in% de.shythdf$NS ~ "NS",
+    T ~ "NA"
+  )) -> tab.plot
+
+ggplot(data = tab.plot %>% filter(shYthdf123 != "NA"), aes(x = shYthdf123, fill = msa_var)) + 
+  geom_bar(position = "fill", size = 0.25, color = "black") +
+  scale_fill_manual(values = alpha(pal_msa[c(3, 1, 2)], 0.67), name = "m6A consensus:") +
+  theme(aspect.ratio = 1.5) -> p.7.1.shythdf
+ggplot(data = tab.plot %>% filter(shMettl3 != "NA"),
+       aes(x = shMettl3, fill = msa_var)) + 
+  geom_bar(position = "fill", size = 0.25, color = "black") +
+  scale_fill_manual(values = alpha(pal_msa[c(3, 1, 2)], 0.67), name = "m6A consensus:") +
+  theme(aspect.ratio = 1.5) -> p.7.1.shmettl3
+
+ggsave(p.7.1.shythdf, filename = "../output/p.7.1.shythdf.pdf")
+ggsave(p.7.1.shmettl3, filename = "../output/p.7.1.shmettl3.pdf")
+
+
+
+tab.plot %>% 
+  filter(shYthdf123 != "Not significant", shYthdf123 != "NA") %>% 
+  tabyl(shYthdf123, msa_var) %>% 
+  chisq.test() -> p.7.1.shythdf.tst
+tab.plot %>% 
+  filter(shMettl3 != "Not significant", shMettl3 != "NA") %>% 
+  tabyl(shMettl3, msa_var) %>% 
+  chisq.test() -> p.7.1.shmettl3.tst
+tibble(Group = c("shYthdf123", "shMettl3"), 
+       comparison = "m6A status vs DE", 
+       test = "chi-squared", 
+       p.value = c(p.7.1.shythdf.tst$p.value, 
+                   p.7.1.shmettl3.tst$p.value)) %>% 
+  mutate(p.adj = p.adjust(p.value)) %>% 
+  write_tsv(., "../output/p.7.1_stats.tsv")
+```
+
+################################################################################
+## 7.1. Changes in localisation between neurites and soma for DE transcripts in shMettl3 and shYthdf123 KDs.
+```{r}
+de.shythdf_wide <- read_rds("../data/PCN.TwoWay_shYthdf123/DEres.2c_Comp.Wide.RDS")
+de.shmettl3_wide <- read_rds("../data/PCN.TwoWay_shMettl3/DEres.2c_Comp.Wide.RDS")
+##
+
+de.shythdf_wide  %>% 
+  inner_join(mm10Ann, ., by = c("gene_id" = "gene_name")) %>%
+  mutate(shYthdf123 = case_when(
+    gene_id %in% de.shythdf$shYTHDF123 ~ "Up-regulated",
+    gene_id %in% de.shythdf$Scrambled ~ "Down-regulated",
+    gene_id %in% de.shythdf$NS ~ "NS",
+    T ~ "NA"
+  )) %>% 
+  mutate(delta_loc = log2FoldChange_shYTHDF123 - log2FoldChange_Scrambled) -> dloc.shythdf
+  
+de.shmettl3_wide %>% 
+  inner_join(mm10Ann, ., by = c("gene_id" = "gene_name")) %>%
+  mutate(shMettl3 = case_when(
+    gene_name %in% de.shmettl3$shMettl3 ~ "Up-regulated",
+    gene_name %in% de.shmettl3$Scrambled ~ "Down-regulated",
+    gene_name %in% de.shmettl3$NS ~ "NS",
+    T ~ "NA"
+  )) %>% 
+  mutate(delta_loc = log2FoldChange_shMettl3 - log2FoldChange_Scrambled) -> dloc.shmettl3
+
+###
+ggplot(data = dloc.shythdf %>% filter(!shYthdf123 %in% c("NA", "NS")),
+       aes(x = delta_loc)) +
+  geom_density(aes(fill = shYthdf123), size = 0.25, color = "black") + 
+  geom_vline(xintercept = 0, size = 0.5) +
+  scale_fill_manual(values = alpha(c("gray50", "red"), 0.37)) +
+  scale_x_continuous(breaks = seq(-2, 2, by = 1), limits = c(-2, 2)) + 
+  labs(y = "", x = "delta lg2FC Neurite vs Soma\nshYthdf123 - Scrambled") -> p.7.2.shythdf
+
+ggplot(data = dloc.shmettl3 %>% filter(!shMettl3 %in% c("NA", "NS")),
+       aes(x = delta_loc)) +
+  geom_density(aes(fill = shMettl3), size = 0.25, color = "black") + 
+  geom_vline(xintercept = 0, size = 0.5) +
+  scale_fill_manual(values = alpha(c("gray50", "red"), 0.37)) +
+  scale_x_continuous(breaks = seq(-2, 2, by = 1), limits = c(-2, 2)) + 
+  labs(y = "", x = "delta lg2FC Neurite vs Soma\nshMettl3 - Scrambled") -> p.7.2.shmettl3
+
+ggsave(p.7.2.shythdf, filename = "../output/p.7.2.shythdf.pdf")
+ggsave(p.7.2.shmettl3, filename = "../output/p.7.2.shmettl3.pdf")
+
+ks.test(formula = delta_loc ~ shYthdf123, data = p.7.2.shythdf$data) -> p.7.2.shythdf.tst
+ks.test(formula = delta_loc ~ shMettl3, data = p.7.2.shmettl3$data) -> p.7.2.shmettl3.tst
+tibble(Group = c("shYthdf123", "shMettl3"), 
+       comparison = "m6A status vs DE", 
+       test = "chi-squared", 
+       p.value = c(p.7.2.shythdf.tst$p.value, 
+                   p.7.2.shmettl3.tst$p.value)) %>% 
+  mutate(p.adj = p.adjust(p.value)) %>% 
+  write_tsv(., "../output/p.7.2_stats.tsv")
+```
+
+########################################################  
+#   8. Plots related to Supplementary Figure 7
+################################################################################
+## 8.1. Probabilities of a transcripts to reach a dendritic distance of 400 micrometers with/without the help of active transport (based on a model from Fonkeu et al. 2019)
+```{r}
+t.dist <- purrr::pmap(list(
+  rep(c(0.5, 6, 27), 2),
+  rep(c(0, 1), each = 3),
+  rep(c("diffusion only", "with active transport"), each = 3)
+  ),
+            ~ list(name = ..1, 
+                   tr_hl = ..1, 
+                   nbins = 100, 
+                   ddist = 400, 
+                   DR = 3.0 * 10^(-3), 
+                   uR = ..2 * 5.8 * 10^(-3), 
+                   betaR = 0.0109) %>% 
+              rdd() %>% mutate(group = ..3)
+            ) %>% 
+  purrr::reduce(., rbind)
+
+ggplot(data = t.dist, aes(x = dend_dist, y = rna_pdens)) + 
+  geom_line(aes(color = group)) + 
+  facet_grid(. ~ rna_hl) + 
+  labs(x = "Neuritic distance, micrometers", y = "Probability", color = "") +
+  theme(aspect.ratio = 0.75) -> p.8.1
+
+ggsave(p.8.1, filename = "../output/p.8.1.pdf")
+```
+
+
+
