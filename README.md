@@ -17,7 +17,7 @@ Running the entirety of R notebook ```./src/code.RMD``` will save all figures in
 Short descriptions for the outpout could be found above code-chunks in the same notebook.<br>
 Opening the repository as an Rproject is recommended.
 
-### Environment
+### Reproducible environment
 Currently, the state of the project's libraries is saved with [```renv```](https://rstudio.github.io/renv/articles/renv.html#reproducibility) R package. 
 To restore the packages with the same versions used in the initial analysis one can run:
  ```R
