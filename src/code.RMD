@@ -838,9 +838,10 @@ ggplot(data = t.p_1fd %>% filter(dend_dist == 100),
 ggsave(p.2.3, filename = "../output/p.2.3.pdf", width = 4.5, height = 3.5)
 
 
-
-
-
+tibble(comparison = "Projection vs Cytoplasm", 
+       test = "Welch's", 
+       p.value = t.test(rna_pdens ~ sign, data = p.2.3$data)$p.value) -> p.2.3_stats
+write_tsv(p.2.3_stats, "../output/p.2.3_stats.tsv")
 ```
 
 
@@ -1299,7 +1300,7 @@ t.perm <- t.perm %>%
 tibble(comparison = "shYTHDF vs Scrambled", test = "Permutation",
        p.value = diff(ecdf(t.perm$m.lg10_pval)(c(-log10(spks.test_mwu$p.value), Inf)))) -> p.3.4_stats
 
-write_tsv(p.3.4_stats, "../output/p.3.4_stats.pdf")
+write_tsv(p.3.4_stats, "../output/p.3.4_stats.tsv")
 ```
 
 
