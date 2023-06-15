@@ -1,3 +1,5 @@
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.8042339.svg)](https://doi.org/10.5281/zenodo.8042339)
+
 # Stability paper --- Figures
 
 Supporting repository for the stability manuscript. The reporsitory contains code to generate figures and correspdoning statistics where needed. 
